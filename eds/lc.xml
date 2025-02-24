@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    GSC-18128-1, "Core Flight Executive Version 6.7"
+    LEW-19710-1, "CCSDS electronic data sheet implementation"
+
+    Copyright (c) 2006-2019 United States Government as represented by
+    the Administrator of the National Aeronautics and Space Administration.
+    All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+    This document adheres to the Electronic Data Sheet (EDS) XML schema
+    as prescribed in CCSDS book 876.0.
+
+    Purpose:
+      This describes all interface objects for the Executive Services (CFE_ES)
+      core application
+
+-->
+<PackageFile xmlns="http://www.ccsds.org/schema/sois/seds">
+  <Package name="LC" shortDescription="Limit Checker">
+
+    <DataTypeSet>
+
+      <!-- Commands payload structure definitions -->
+      <ContainerDataType name="SetLcState_CmdPayload" shortDescription="Set LC Application State Payload">
+        <EntryList>
+          <Entry name="NewLCState" type="BASE_TYPES/uint16" shortDescription="New LC application state" />
+          <Entry name="Padding" type="BASE_TYPES/uint16" shortDescription="Structure padding" />
+        </EntryList>
+      </ContainerDataType>
+
+      <ContainerDataType name="SetApState_CmdPayload" shortDescription="Set AP (Actionpoint) State Payload">
+        <EntryList>
+          <Entry name="APNumber" type="BASE_TYPES/uint16" shortDescription="Which actionpoint(s) to change" />
+          <Entry name="NewAPState" type="BASE_TYPES/uint16" shortDescription="New actionpoint state" />
+        </EntryList>
+      </ContainerDataType>
+
+      <ContainerDataType name="SetApPermOff_CmdPayload" shortDescription="Set AP (Actionpoint) Permanently Off Payload">
+        <EntryList>
+          <Entry name="APNumber" type="BASE_TYPES/uint16" shortDescription="Which actionpoint(s) to change" />
+          <Entry name="Padding" type="BASE_TYPES/uint16" shortDescription="Structure padding" />
+        </EntryList>
+      </ContainerDataType>
+
+      <ContainerDataType name="ResetApStats_CmdPayload" shortDescription="Reset AP (Actionpoint) Statistics Payloa">
+        <EntryList>
+          <Entry name="APNumber" type="BASE_TYPES/uint16" shortDescription="Which actionpoint(s) to change" />
+          <Entry name="Padding" type="BASE_TYPES/uint16" shortDescription="Structure padding" />
+        </EntryList>
+      </ContainerDataType>
+
+      <ContainerDataType name="ResetWpStats_CmdPayload" shortDescription="Reset WP (Watchpoint) Statistics Payload">
+        <EntryList>
+          <Entry name="WPNumber" type="BASE_TYPES/uint16" shortDescription="Which watchpoint(s) to change" />
+          <Entry name="Padding" type="BASE_TYPES/uint16" shortDescription="Structure padding" />
+        </EntryList>
+      </ContainerDataType>
+
+      <ContainerDataType name="SampleAp_CmdPayload" shortDescription="Reset WP (Watchpoint) Statistics Payload">
+        <EntryList>
+          <Entry name="StartIndex" type="BASE_TYPES/uint16" shortDescription="Start actionpoint to sample" />
+          <Entry name="EndIndex" type="BASE_TYPES/uint16" shortDescription="End actionpoint to sample" />
+          <Entry name="UpdateAge" type="BASE_TYPES/uint16" shortDescription="Update WP results age (T or F)" />
+          <Entry name="Padding" type="BASE_TYPES/uint16" shortDescription="Structure padding" />
+        </EntryList>
+      </ContainerDataType>
+
+      <ContainerDataType name="RtsRequest_CmdPayload" shortDescription="Payload to Start a Stored Command RTS">
+        <EntryList>
+          <Entry name="RTSId" type="BASE_TYPES/uint16" shortDescription="RTS Id to start" />
+          <Entry name="Padding" type="BASE_TYPES/uint16" shortDescription="Structure padding" />
+        </EntryList>
+      </ContainerDataType>
+
+      <!-- Commands definitions -->
+      <ContainerDataType name="CommandBase" baseType="CFE_HDR/CommandHeader">
+      </ContainerDataType>
+
+      <ContainerDataType name="SendHk" baseType="CFE_HDR/CommandHeader">
+      </ContainerDataType>
+      
+      <ContainerDataType name="Noop" baseType="CommandBase">
+        <ConstraintSet>
+          <ValueConstraint entry="Sec.FunctionCode" value="${APP_C_FW/NOOP_CC}" />
+        </ConstraintSet>
+      </ContainerDataType>
+
+      <ContainerDataType name="ResetCounters" baseType="CommandBase">
+        <ConstraintSet>
+          <ValueConstraint entry="Sec.FunctionCode" value="${APP_C_FW/RESET_CC}" />
+        </ConstraintSet>
+      </ContainerDataType>
+
+      <ContainerDataType name="SetLcState" baseType="CommandBase">
+        <ConstraintSet>
+          <ValueConstraint entry="Sec.FunctionCode" value="${APP_C_FW/APP_BASE_CC} + 0" />
+        </ConstraintSet>
+        <EntryList>
+          <Entry type="SetLcState_CmdPayload" name="Payload" />
+        </EntryList>
+      </ContainerDataType>
+
+      <ContainerDataType name="SetApState" baseType="CommandBase">
+        <ConstraintSet>
+          <ValueConstraint entry="Sec.FunctionCode" value="${APP_C_FW/APP_BASE_CC} + 1" />
+        </ConstraintSet>
+        <EntryList>
+          <Entry type="SetApState_CmdPayload" name="Payload" />
+        </EntryList>
+      </ContainerDataType>
+
+      <ContainerDataType name="SetApPermOff" baseType="CommandBase">
+        <ConstraintSet>
+          <ValueConstraint entry="Sec.FunctionCode" value="${APP_C_FW/APP_BASE_CC} + 2" />
+        </ConstraintSet>
+        <EntryList>
+          <Entry type="SetApPermOff_CmdPayload" name="Payload" />
+        </EntryList>
+      </ContainerDataType>
+
+      <ContainerDataType name="ResetApStats" baseType="CommandBase">
+        <ConstraintSet>
+          <ValueConstraint entry="Sec.FunctionCode" value="${APP_C_FW/APP_BASE_CC} + 3" />
+        </ConstraintSet>
+        <EntryList>
+          <Entry type="SetApStats_CmdPayload" name="Payload" />
+        </EntryList>
+      </ContainerDataType>
+
+      <ContainerDataType name="ResetWpStats" baseType="CommandBase">
+        <ConstraintSet>
+          <ValueConstraint entry="Sec.FunctionCode" value="${APP_C_FW/APP_BASE_CC} + 4" />
+        </ConstraintSet>
+        <EntryList>
+          <Entry type="SetWpStats_CmdPayload" name="Payload" />
+        </EntryList>
+      </ContainerDataType>
+
+      <ContainerDataType name="SampleAp" shortDescription="Sample AP (Actionpoint) Request">
+        <ConstraintSet>
+          <ValueConstraint entry="Sec.FunctionCode" value="${APP_C_FW/APP_BASE_CC} + 5" />
+        </ConstraintSet>
+        <EntryList>
+          <Entry type="SampleAp_CmdPayload" name="Payload" />
+        </EntryList>
+
+      <ContainerDataType name="RtsRequest" shortDescription="Send Command to Start a Stored Command RTS">
+        <ConstraintSet>
+          <ValueConstraint entry="Sec.FunctionCode" value="${APP_C_FW/APP_BASE_CC} + 6" />
+        </ConstraintSet>
+        <EntryList>
+          <Entry type="RtsRequest_CmdPayload" name="Payload" />
+        </EntryList>
+      </ContainerDataType>
+
+      <!-- Telemetry payload structure definitions -->
+      <ArrayDataType name="WPResultsArray" dataTypeRef="BASE_TYPES/uint8">
+        <DimensionList>
+          <Dimension size="${LC/HKWR_NUM_BYTES}" />
+        </DimensionList>
+      </ArrayDataType>
+      <ArrayDataType name="APResultsArray" dataTypeRef="BASE_TYPES/uint8">
+        <DimensionList>
+          <Dimension size="${LC/HKAR_NUM_BYTES}" />
+        </DimensionList>
+      </ArrayDataType>
+
+      <ContainerDataType name="HkTlm_Payload" shortDescription="Housekeeping Payload Structure">
+        <EntryList>
+          <Entry name="CmdCount" type="BASE_TYPES/uint8" shortDescription="LC Application Command Counter" />
+          <Entry name="CmdErrCount" type="BASE_TYPES/uint8" shortDescription="LC Application Command Error Counter" />
+          <Entry name="CurrentLCState" type="BASE_TYPES/uint8" shortDescription="Current LC application operating state" />
+
+          <Entry name="Pad8" type="BASE_TYPES/uint8" shortDescription="Structure padding" />
+
+          <Entry name="WPResults" type="WPResultsArray" shortDescription="Packed watchpoint results data, 2 bits per watchpoint" /> 
+          <Entry name="APResults" type="APResultsArray" shortDescription="Packed actionpoint results data, 4 bits per actionpoint" />
+
+          <Entry name="PassiveRTSExecCount" type="BASE_TYPES/uint16" shortDescription="Total count of RTS sequences not initiated because the LC state is set to #LC_STATE_PASSIVE or the state of the actionpoint that failed is set to #LC_APSTATE_PASSIVE" />
+
+          <Entry name="WPsInUse" type="BASE_TYPES/uint16" shortDescription="How many watchpoints are currently in effect" />
+          <Entry name="ActiveAPs" type="BASE_TYPES/uint16" shortDescription="How many actionpoints are currently active" />       
+
+          <Entry name="Pad16" type="BASE_TYPES/uint16" shortDescription="Structure padding" />
+
+          <Entry name="APSampleCount" type="BASE_TYPES/uint32" shortDescription="Total count of Actionpoints sampled" />
+          <Entry name="MonitoredMsgCount" type="BASE_TYPES/uint32" shortDescription="Total count of messages monitored for watchpoints" />
+          <Entry name="RTSExecCount" type="BASE_TYPES/uint32" shortDescription="Total count of RTS sequences initiated" />
+        </EntryList>
+      </ContainerDataType>
+
+      <!-- Telemetry definitions -->      
+      <ContainerDataType name="HkTlm" baseType="CFE_HDR/TelemetryHeader" shortDescription="Housekeeping Telemetry">
+        <EntryList>
+          <Entry type="HkTlm_Payload" name="Payload" />
+        </EntryList>
+      </ContainerDataType>
+
+    </DataTypeSet>
+
+    <ComponentSet>
+      <Component name="Application">
+        <RequiredInterfaceSet>
+          <Interface name="CMD" shortDescription="Software bus telecommand interface" type="CFE_SB/Telecommand">
+            <GenericTypeMapSet>
+              <GenericTypeMap name="TelecommandDataType" type="CommandBase" />
+            </GenericTypeMapSet>
+          </Interface>
+          <Interface name="SEND_HK" shortDescription="Send telemetry command interface" type="CFE_SB/Telecommand">
+            <!-- This uses a bare spacepacket with no payload -->
+            <GenericTypeMapSet>
+              <GenericTypeMap name="TelecommandDataType" type="SendHkCmd" />
+            </GenericTypeMapSet>
+          </Interface>
+          <Interface name="HK_TLM" shortDescription="Software bus housekeeping telemetry interface" type="CFE_SB/Telemetry">
+            <GenericTypeMapSet>
+              <GenericTypeMap name="TelemetryDataType" type="HkTlm" />
+            </GenericTypeMapSet>
+          </Interface>
+        </RequiredInterfaceSet>
+        <Implementation>
+          <VariableSet>
+            <Variable type="BASE_TYPES/uint16" readOnly="true" name="CmdTopicId" initialValue="${CFE_MISSION/SAMPLE_APP_CMD_TOPICID}" />
+            <Variable type="BASE_TYPES/uint16" readOnly="true" name="SendHkTopicId" initialValue="${CFE_MISSION/SAMPLE_APP_SEND_HK_TOPICID}" />
+            <Variable type="BASE_TYPES/uint16" readOnly="true" name="HkTlmTopicId" initialValue="${CFE_MISSION/SAMPLE_APP_HK_TLM_TOPICID}" />
+          </VariableSet>
+          <!-- Assign fixed numbers to the "TopicId" parameter of each interface -->
+          <ParameterMapSet>
+            <ParameterMap interface="CMD" parameter="TopicId" variableRef="CmdTopicId" />
+            <ParameterMap interface="SEND_HK" parameter="TopicId" variableRef="SendHkTopicId" />
+            <ParameterMap interface="HK_TLM" parameter="TopicId" variableRef="HkTlmTopicId" />
+          </ParameterMapSet>
+        </Implementation>
+      </Component>
+    </ComponentSet>
+
+  </Package>
+</PackageFile>
