@@ -16,7 +16,7 @@
       "entry-symbol": "LC_AppMain",
       "name": "LC",
       "priority": 10,
-      "stack": 16384,
+      "stack": 32768,
       "load_addr": 0,
       "exception-action": 0,
       "app-framework": "cfe",

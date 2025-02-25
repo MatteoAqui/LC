@@ -107,11 +107,9 @@
       </ContainerDataType>
 
       <!-- Commands definitions -->
-      <ContainerDataType name="CommandBase" baseType="CFE_HDR/CommandHeader">
-      </ContainerDataType>
+      <ContainerDataType name="CommandBase" baseType="CFE_HDR/CommandHeader"></ContainerDataType>
 
-      <ContainerDataType name="SendHk" baseType="CFE_HDR/CommandHeader">
-      </ContainerDataType>
+      <ContainerDataType name="SendHk" baseType="CFE_HDR/CommandHeader"></ContainerDataType>
       
       <ContainerDataType name="Noop" baseType="CommandBase">
         <ConstraintSet>
@@ -177,6 +175,7 @@
         <EntryList>
           <Entry type="SampleAp_CmdPayload" name="Payload" />
         </EntryList>
+      </ContainerDataType>
 
       <ContainerDataType name="RtsRequest" baseType="CommandBase" shortDescription="Send Command to Start a Stored Command RTS">
         <ConstraintSet>
