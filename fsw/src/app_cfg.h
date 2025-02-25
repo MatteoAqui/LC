@@ -177,13 +177,12 @@
 
 DECLARE_ENUM(Config,APP_CONFIG)
 
-
 /******************************************************************************
 ** Event Macros
 **
-** Define the base event message IDs used by each object/component used by the
-** application. There are no automated checks to ensure an ID range is not
-** exceeded so it is the developer's responsibility to verify the ranges.
+** Define the  event message IDs used by each object/component used by the
+** application
+**
 ** Adapted from inc/lc_eventids.h
 */
 
