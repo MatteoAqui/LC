@@ -1,0 +1,23 @@
+{
+    "title": "LC initialization file",
+    "description": ["Define runtime configurations"],
+    "config": {
+       
+       "APP_CFE_NAME": "LC",
+       "APP_PERF_ID":  28,
+           
+       "APP_CMD_PIPE_DEPTH": 12,
+       "APP_CMD_PIPE_NAME":  "LC_CMD",
+ 
+       "LC_CMD_TOPICID": 0,
+       "LC_SEND_HK_TOPICID": 0,
+       "LC_HK_TLM_TOPICID": 0,
+
+       "LC_WDT_SEARCH_PERF_ID": 43,
+
+       "LC_WDT_FILENAME": "/cf/lc_def_wdt.json",
+       "LC_ADT_FILENAME": "/cf/lc_def_adt.json"
+              
+    }
+ }
+ 

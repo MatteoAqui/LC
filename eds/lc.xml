@@ -34,17 +34,38 @@
     <DataTypeSet>
 
       <!-- Commands payload structure definitions -->
+      <EnumeratedDataType name="State" shortDescription="Possible LC States" >
+        <IntegerDataEncoding sizeInBits="16" encoding="unsigned" />
+        <EnumerationList>
+          <Enumeration label="ACTIVE" value="1" shortDescription="LC Application State Active" />
+          <Enumeration label="PASSIVE" value="2" shortDescription="LC Application State Passive" />
+          <Enumeration label="DISABLED" value="3" shortDescription="LC Application State Disabled" />
+          <Enumeration label="FROM_CDS" value="4" shortDescription="Used for reset processing, not valid state" />
+        </EnumerationList>
+      </EnumeratedDataType>
+
       <ContainerDataType name="SetLcState_CmdPayload" shortDescription="Set LC Application State Payload">
         <EntryList>
-          <Entry name="NewLCState" type="BASE_TYPES/uint16" shortDescription="New LC application state" />
+          <Entry name="NewLCState" type="State" shortDescription="New LC application state" />
           <Entry name="Padding" type="BASE_TYPES/uint16" shortDescription="Structure padding" />
         </EntryList>
       </ContainerDataType>
 
+      <EnumeratedDataType name="ApState" shortDescription="Possible Action Point States" >
+        <IntegerDataEncoding sizeInBits="16" encoding="unsigned" />
+        <EnumerationList>
+          <Enumeration label="NOT_USED" value="0xFF" shortDescription="Actionpoint unused, not valid command argument" />
+          <Enumeration label="ACTIVE" value="1" shortDescription="Actionpoint state active" />
+          <Enumeration label="PASSIVE" value="2" shortDescription="Actionpoint state passive" />
+          <Enumeration label="DISABLED" value="3" shortDescription="Actionpoint state disabled" />
+          <Enumeration label="PERMOFF" value="4" shortDescription="Actionpoint state permanently off" />
+        </EnumerationList>
+      </EnumeratedDataType>
+
       <ContainerDataType name="SetApState_CmdPayload" shortDescription="Set AP (Actionpoint) State Payload">
         <EntryList>
           <Entry name="APNumber" type="BASE_TYPES/uint16" shortDescription="Which actionpoint(s) to change" />
-          <Entry name="NewAPState" type="BASE_TYPES/uint16" shortDescription="New actionpoint state" />
+          <Entry name="NewAPState" type="ApState" shortDescription="New actionpoint state" />
         </EntryList>
       </ContainerDataType>
 
@@ -55,7 +76,7 @@
         </EntryList>
       </ContainerDataType>
 
-      <ContainerDataType name="ResetApStats_CmdPayload" shortDescription="Reset AP (Actionpoint) Statistics Payloa">
+      <ContainerDataType name="ResetApStats_CmdPayload" shortDescription="Reset AP (Actionpoint) Statistics Payload">
         <EntryList>
           <Entry name="APNumber" type="BASE_TYPES/uint16" shortDescription="Which actionpoint(s) to change" />
           <Entry name="Padding" type="BASE_TYPES/uint16" shortDescription="Structure padding" />
@@ -149,7 +170,7 @@
         </EntryList>
       </ContainerDataType>
 
-      <ContainerDataType name="SampleAp" shortDescription="Sample AP (Actionpoint) Request">
+      <ContainerDataType name="SampleAp" baseType="CommandBase" shortDescription="Sample AP (Actionpoint) Request">
         <ConstraintSet>
           <ValueConstraint entry="Sec.FunctionCode" value="${APP_C_FW/APP_BASE_CC} + 5" />
         </ConstraintSet>
@@ -157,7 +178,7 @@
           <Entry type="SampleAp_CmdPayload" name="Payload" />
         </EntryList>
 
-      <ContainerDataType name="RtsRequest" shortDescription="Send Command to Start a Stored Command RTS">
+      <ContainerDataType name="RtsRequest" baseType="CommandBase" shortDescription="Send Command to Start a Stored Command RTS">
         <ConstraintSet>
           <ValueConstraint entry="Sec.FunctionCode" value="${APP_C_FW/APP_BASE_CC} + 6" />
         </ConstraintSet>
@@ -167,14 +188,104 @@
       </ContainerDataType>
 
       <!-- Telemetry payload structure definitions -->
-      <ArrayDataType name="WPResultsArray" dataTypeRef="BASE_TYPES/uint8">
+
+      <!-- TODO: current implementation is arrays of 8bit uint, each element contains 4 results (2bit each) 
+           It could be interesting to use the enumerations defined below with different structures for clarity this
+           Looks like the main reason not to is memory efficiency...for now stays like this (commented out part)
+           could be revised at a later stage, but then all the logic in lc_cmds.c must change accordingly
+           Note that 2bits Enum are defined as well for now, used in app_cfg.h to redifine the internal values used
+           (this might change, but seems a reasonable compromise so far) 
+      -->
+
+      <!-- 
+      <EnumeratedDataType name="WpRes" shortDescription="Housekeeping Packed Watch Results" >
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned" />
+        <EnumerationList>
+          <Enumeration label="FALSE" value="0" />
+          <Enumeration label="TRUE"  value="1" />
+          <Enumeration label="ERROR" value="2" />
+          <Enumeration label="STALE" value="3" />
+        </EnumerationList>
+      </EnumeratedDataType>
+
+      <ArrayDataType name="WpResArray" dataTypeRef="WpRes">
         <DimensionList>
-          <Dimension size="${LC/HKWR_NUM_BYTES}" />
+          <Dimension size="${LC/LC_MAX_WATCHPOINTS}" />  
         </DimensionList>
       </ArrayDataType>
+
+      <EnumeratedDataType name="ApRes" shortDescription="Housekeeping Packed Action Results" >
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned" />
+        <EnumerationList>
+          <Enumeration label="PASS"  value="0" />
+          <Enumeration label="FAIL"  value="1" />
+          <Enumeration label="ERROR" value="2" />
+          <Enumeration label="STALE" value="3" />
+        </EnumerationList>
+      </EnumeratedDataType>
+
+      <ArrayDataType name="ApResArray" dataTypeRef="ApRes">
+        <DimensionList>
+          <Dimension size="${LC/LC_MAX_ACTIONPOINTS}" />
+        </DimensionList>
+      </ArrayDataType>
+
+      <EnumeratedDataType name="ApResState" shortDescription="Housekeeping Packed Action Results, State Identifiers" >
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned" />
+        <EnumerationList>
+          <Enumeration label="NOT_USED" value="0" />
+          <Enumeration label="ACTIVE"   value="1" />
+          <Enumeration label="PASSICE"  value="2" />
+          <Enumeration label="DISABLED" value="3" />
+        </EnumerationList>
+      </EnumeratedDataType>
+
+      <ArrayDataType name="ApResStatesArray" dataTypeRef="ApResState">
+        <DimensionList>
+          <Dimension size="${LC/LC_MAX_ACTIONPOINTS}" />
+        </DimensionList>
+      </ArrayDataType>
+      -->
+
+      <EnumeratedDataType name="WpRes" shortDescription="Housekeeping Packed Watch Results" >
+        <IntegerDataEncoding sizeInBits="2" encoding="unsigned" />
+        <EnumerationList>
+          <Enumeration label="FALSE" value="0x00" shortDescription="Two bit value used for LC_HKWR_FALSE" />
+          <Enumeration label="TRUE"  value="0x01" shortDescription="Two bit value used for LC_HKWR_TRUE" />
+          <Enumeration label="ERROR" value="0x02" shortDescription="Two bit value used for LC_HKWR_ERROR" />
+          <Enumeration label="STALE" value="0x03" shortDescription="Two bit value used for LC_HKWR_STALE" />
+        </EnumerationList>
+      </EnumeratedDataType>
+
+      <EnumeratedDataType name="ApRes" shortDescription="Housekeeping Packed Action Results" >
+        <IntegerDataEncoding sizeInBits="2" encoding="unsigned" />
+        <EnumerationList>
+          <Enumeration label="PASS"  value="0x00" shortDescription="Two bit value used for LC_HKAR_PASS" />
+          <Enumeration label="FAIL"  value="0x01" shortDescription="Two bit value used for LC_HKAR_FAIL" />
+          <Enumeration label="ERROR" value="0x02" shortDescription="Two bit value used for LC_HKAR_ERROR" />
+          <Enumeration label="STALE" value="0x03" shortDescription="Two bit value used for LC_HKAR_STALE" />
+        </EnumerationList>
+      </EnumeratedDataType>
+
+      <EnumeratedDataType name="ApResState" shortDescription="Housekeeping Packed Action Results, State Identifiers" >
+        <IntegerDataEncoding sizeInBits="2" encoding="unsigned" />
+        <EnumerationList>
+          <Enumeration label="NOT_USED" value="0x00" shortDescription="Two bit value used for LC_HKAR_STATE_NOT_USED" />
+          <Enumeration label="ACTIVE"   value="0x01" shortDescription="Two bit value used for LC_HKAR_STATE_ACTIVE" />
+          <Enumeration label="PASSICE"  value="0x02" shortDescription="Two bit value used for LC_HKAR_STATE_PASSIVE" />
+          <Enumeration label="DISABLED" value="0x03" shortDescription="Two bit value used for LC_HKAR_STATE_DISABLED" />
+        </EnumerationList>
+      </EnumeratedDataType>
+
+      <ArrayDataType name="WPResultsArray" dataTypeRef="BASE_TYPES/uint8">
+        <DimensionList>
+          <Dimension size="${LC/LC_HKWR_NUM_BYTES}" />  
+        </DimensionList>
+      </ArrayDataType>
+
       <ArrayDataType name="APResultsArray" dataTypeRef="BASE_TYPES/uint8">
         <DimensionList>
-          <Dimension size="${LC/HKAR_NUM_BYTES}" />
+          <Dimension size="${LC/LC_HKAR_NUM_BYTES}" />
         </DimensionList>
       </ArrayDataType>
 
@@ -182,13 +293,13 @@
         <EntryList>
           <Entry name="CmdCount" type="BASE_TYPES/uint8" shortDescription="LC Application Command Counter" />
           <Entry name="CmdErrCount" type="BASE_TYPES/uint8" shortDescription="LC Application Command Error Counter" />
-          <Entry name="CurrentLCState" type="BASE_TYPES/uint8" shortDescription="Current LC application operating state" />
+          <Entry name="CurrentLCState" type="LCState" shortDescription="Current LC application operating state" />
 
           <Entry name="Pad8" type="BASE_TYPES/uint8" shortDescription="Structure padding" />
 
           <Entry name="WPResults" type="WPResultsArray" shortDescription="Packed watchpoint results data, 2 bits per watchpoint" /> 
-          <Entry name="APResults" type="APResultsArray" shortDescription="Packed actionpoint results data, 4 bits per actionpoint" />
-
+          <Entry name="APResults" type="APResultsArray" shortDescription="Packed actionpoint results data, 2 bits per actionpoint" />
+          
           <Entry name="PassiveRTSExecCount" type="BASE_TYPES/uint16" shortDescription="Total count of RTS sequences not initiated because the LC state is set to #LC_STATE_PASSIVE or the state of the actionpoint that failed is set to #LC_APSTATE_PASSIVE" />
 
           <Entry name="WPsInUse" type="BASE_TYPES/uint16" shortDescription="How many watchpoints are currently in effect" />
@@ -219,23 +330,26 @@
               <GenericTypeMap name="TelecommandDataType" type="CommandBase" />
             </GenericTypeMapSet>
           </Interface>
+
           <Interface name="SEND_HK" shortDescription="Send telemetry command interface" type="CFE_SB/Telecommand">
             <!-- This uses a bare spacepacket with no payload -->
             <GenericTypeMapSet>
-              <GenericTypeMap name="TelecommandDataType" type="SendHkCmd" />
+              <GenericTypeMap name="TelecommandDataType" type="SendHk" />
             </GenericTypeMapSet>
           </Interface>
+
           <Interface name="HK_TLM" shortDescription="Software bus housekeeping telemetry interface" type="CFE_SB/Telemetry">
             <GenericTypeMapSet>
               <GenericTypeMap name="TelemetryDataType" type="HkTlm" />
             </GenericTypeMapSet>
           </Interface>
         </RequiredInterfaceSet>
+
         <Implementation>
           <VariableSet>
-            <Variable type="BASE_TYPES/uint16" readOnly="true" name="CmdTopicId" initialValue="${CFE_MISSION/SAMPLE_APP_CMD_TOPICID}" />
-            <Variable type="BASE_TYPES/uint16" readOnly="true" name="SendHkTopicId" initialValue="${CFE_MISSION/SAMPLE_APP_SEND_HK_TOPICID}" />
-            <Variable type="BASE_TYPES/uint16" readOnly="true" name="HkTlmTopicId" initialValue="${CFE_MISSION/SAMPLE_APP_HK_TLM_TOPICID}" />
+            <Variable type="BASE_TYPES/uint16" readOnly="true" name="CmdTopicId" initialValue="${CFE_MISSION/LC_CMD_TOPICID}" />
+            <Variable type="BASE_TYPES/uint16" readOnly="true" name="SendHkTopicId" initialValue="${CFE_MISSION/LC_SEND_HK_TOPICID}" />
+            <Variable type="BASE_TYPES/uint16" readOnly="true" name="HkTlmTopicId" initialValue="${CFE_MISSION/LC_HK_TLM_TOPICID}" />
           </VariableSet>
           <!-- Assign fixed numbers to the "TopicId" parameter of each interface -->
           <ParameterMapSet>

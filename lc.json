@@ -1,0 +1,29 @@
+{ "app": {
+   
+   "title": "Limit Checker",
+   "version": "0.0.0",
+   "supplier": "Matteo Aquilano",
+   "copyright": "Apache-2.0 license",
+   "url": "https://github.com/MatteoAqui/LC",
+
+   "description": [
+      "NASA Limit Checker (LC) as a basecamp app"
+   ],
+
+   "cfs": {
+      "cfe-type": "CFE_APP",
+      "obj-file": "lc",
+      "entry-symbol": "LC_AppMain",
+      "name": "LC",
+      "priority": 10,
+      "stack": 16384,
+      "load_addr": 0,
+      "exception-action": 0,
+      "app-framework": "cfe",
+      "tables": ["lc_ini.json", "lc_def_adt.json", "lc_def_wdt.json"]
+   },
+   
+   "requires": ["app_c_fw"]
+
+}}
+

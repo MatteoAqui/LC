@@ -1,6 +1,16 @@
-# core Flight System (cFS) Limit Checker (LC)
+# Notes on this fork
 
-## Introduction
+I am attempting to modify the LC app to be compatible with:
+
+- Basecamp App development (based on app_c_fw), see https://github.com/cfs-tools/cfs-basecamp
+
+- Including EDS pipeline
+
+Below the README from the main repo forked
+
+## core Flight System (cFS) Limit Checker (LC)
+
+### Introduction
 
 The Limit Checker (LC) is a core Flight System (cFS) application
 that is a plug in to the Core Flight Executive (cFE) component of the cFS.
@@ -20,14 +30,14 @@ User's guide information can be generated using Doxygen (from top mission direct
   make -C build/docs/lc-usersguide lc-usersguide
 ```
 
-## Software Required
+### Software Required
 
 cFS Framework (cFE, OSAL, PSP)
 
 An integrated bundle including the cFE, OSAL, and PSP can
 be obtained at https://github.com/nasa/cfs
 
-## About cFS
+### About cFS
 
 The cFS is a platform and project independent reusable software framework and
 set of reusable applications developed by NASA Goddard Space Flight Center.
