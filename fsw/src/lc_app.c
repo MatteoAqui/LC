@@ -351,11 +351,11 @@ CFE_Status_t LC_SbInit(void)
         /*
         ** Subscribe to LC internal actionpoint sample messages...
         */
-        Status = CFE_SB_Subscribe(LC_AppData.SampleAp, LC_OperData.CmdPipe);
+        Status = CFE_SB_Subscribe(LC_AppData.SampleApMid, LC_OperData.CmdPipe);
         if (Status != CFE_SUCCESS)
         {
             CFE_EVS_SendEvent(LC_SUB_SAMPLE_CMD_ERR_EID, CFE_EVS_EventType_ERROR,
-                              "Error Subscribing to Sample CMD, MID=0x%08X, RC=0x%08X", LC_AppData.SampleAp,
+                              "Error Subscribing to Sample CMD, MID=0x%08X, RC=0x%08X", LC_AppData.SampleApMid,
                               (unsigned int)Status);
         }
     }
