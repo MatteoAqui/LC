@@ -271,33 +271,29 @@
         <EnumerationList>
           <Enumeration label="NOT_USED" value="0x00" shortDescription="Two bit value used for LC_HKAR_STATE_NOT_USED" />
           <Enumeration label="ACTIVE"   value="0x01" shortDescription="Two bit value used for LC_HKAR_STATE_ACTIVE" />
-          <Enumeration label="PASSICE"  value="0x02" shortDescription="Two bit value used for LC_HKAR_STATE_PASSIVE" />
+          <Enumeration label="PASSIVE"  value="0x02" shortDescription="Two bit value used for LC_HKAR_STATE_PASSIVE" />
           <Enumeration label="DISABLED" value="0x03" shortDescription="Two bit value used for LC_HKAR_STATE_DISABLED" />
         </EnumerationList>
       </EnumeratedDataType>
-
-      <ArrayDataType name="WPResultsArray" dataTypeRef="BASE_TYPES/uint8">
-        <DimensionList>
-          <Dimension size="${LC/LC_HKWR_NUM_BYTES}" />  
-        </DimensionList>
-      </ArrayDataType>
-
-      <ArrayDataType name="APResultsArray" dataTypeRef="BASE_TYPES/uint8">
-        <DimensionList>
-          <Dimension size="${LC/LC_HKAR_NUM_BYTES}" />
-        </DimensionList>
-      </ArrayDataType>
 
       <ContainerDataType name="HkTlm_Payload" shortDescription="Housekeeping Payload Structure">
         <EntryList>
           <Entry name="CmdCount" type="BASE_TYPES/uint8" shortDescription="LC Application Command Counter" />
           <Entry name="CmdErrCount" type="BASE_TYPES/uint8" shortDescription="LC Application Command Error Counter" />
-          <Entry name="CurrentLCState" type="LCState" shortDescription="Current LC application operating state" />
+          <Entry name="CurrentLCState" type="State" shortDescription="Current LC application operating state" />
 
           <Entry name="Pad8" type="BASE_TYPES/uint8" shortDescription="Structure padding" />
 
-          <Entry name="WPResults" type="WPResultsArray" shortDescription="Packed watchpoint results data, 2 bits per watchpoint" /> 
-          <Entry name="APResults" type="APResultsArray" shortDescription="Packed actionpoint results data, 2 bits per actionpoint" />
+          <Entry name="WPResults" type="BASE_TYPES/uint8" shortDescription="Packed watchpoint results data, 2 bits per watchpoint" >
+            <ArrayDimensions>
+              <Dimension size="${LC/LC_HKWR_NUM_BYTES}"/>  
+            </ArrayDimensions>
+          </Entry>    
+          <Entry name="APResults" type="APResultsArray" shortDescription="Packed actionpoint results data, 2 bits per actionpoint" >
+            <ArrayDimensions>
+              <Dimension size="${LC/LC_HKAR_NUM_BYTES}"/>  
+            </ArrayDimensions>
+          </Entry>          
           
           <Entry name="PassiveRTSExecCount" type="BASE_TYPES/uint16" shortDescription="Total count of RTS sequences not initiated because the LC state is set to #LC_STATE_PASSIVE or the state of the actionpoint that failed is set to #LC_APSTATE_PASSIVE" />
 
@@ -318,6 +314,199 @@
           <Entry type="HkTlm_Payload" name="Payload" />
         </EntryList>
       </ContainerDataType>
+
+      <!-- Tables types definitions -->
+      <StringDataType name="ActionText" length="${LC/LC_MAX_ACTION_TEXT}" />
+
+      <ContainerDataType name="AdtEntry" shortDescription="Actionpoint Definition Table (ADT) Entry">
+        <EntryList>
+          <Entry name="DefaultState" type="ApState" shortDescription="Default state for this AP"/>
+          <Entry name="MaxPassiveEvents" type="BASE_TYPES/uint8" shortDescription="Max number of events before RTS not started because AP is passive"/>
+          <Entry name="MaxPassFailEvents" type="BASE_TYPES/uint8" shortDescription="Max number of events before AP result transition from pass to fail"/>
+          <Entry name="MaxFailPassEvents" type="BASE_TYPES/uint8" shortDescription="Max number of events before AP result transition from fail to pass"/>
+          <Entry name="RTSId" type="BASE_TYPES/uint16" shortDescription="RTS to request if this AP fails"/>
+          <Entry name="MaxFailsBeforeRTS" type="BASE_TYPES/uint16" shortDescription="How may consecutive failures before an RTS request is issued"/>
+          <Entry name="RPNEquation" type="BASE_TYPES/uint16" shortDescription="Reverse Polish Equation that specifies when this actionpoint should fail">
+            <ArrayDimensions>
+              <Dimension size="${LC/LC_MAX_RPN_EQU_SIZE}"/>  
+            </ArrayDimensions>
+          </Entry>      
+          <Entry name="EventType" type="BASE_TYPES/uint16" shortDescription="Event type used for event msg if AP fails"/>
+          <Entry name="EventID" type="BASE_TYPES/uint16" shortDescription="Event ID used for event msg if AP fails"/>
+          <Entry name="EventText" type="ActionText" shortDescription="Text used for the event msg when this AP fails"/>
+        </EntryList>
+      </ContainerDataType>
+
+      <!-- In the c code (default_tblstruct.h) is defined as a union type so that the same memory is used for different types, 
+           not sure how to specify this according to the CCSDS 876 standard, the container below is not the same -->
+      <ArrayDataType name="RawByteArray" dataTypeRef="BASE_TYPES/uint8">
+        <DimensionList>
+          <Dimension size="4" />  
+        </DimensionList>
+      </ArrayDataType>
+      <ContainerDataType name="MultiType" shortDescription="Store the watch data points, as they may be 8, 16, or 32 bits and this is defined in the table / not known until runtime">
+        <EntryList>
+          <Entry name="Unsigned32" type="BASE_TYPES/uint32" />
+          <Entry name="Signed32" type="BASE_TYPES/int32" />
+          <Entry name="Float32" type="BASE_TYPES/float" />
+          <Entry name="Unsigned16" type="BASE_TYPES/uint16" />
+          <Entry name="Signed16" type="BASE_TYPES/int16" />
+          <Entry name="Unsigned8" type="BASE_TYPES/uint8" />
+          <Entry name="Signed8" type="BASE_TYPES/int8" />
+          <Entry name="RawByte" type="BASE_TYPES/uint8">
+            <ArrayDimensions>
+              <Dimension size="4" />  
+            </ArrayDimensions>
+          </Entry> 
+        </EntryList>
+      </ContainerDataType>
+
+      <EnumeratedDataType name="WdtDataType" shortDescription="Watchpoint Definition Table (WDT) DataType Enumerated Types" >
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned" />
+        <EnumerationList>
+          <Enumeration label="NOT_USED"  value="0xFF" shortDescription="Use for empty entries" />
+          <Enumeration label="BYTE"      value="1"    shortDescription="8 bit signed byte" />
+          <Enumeration label="UBYTE"     value="2"    shortDescription="8 bit unsigned byte" />
+          <Enumeration label="WORD_BE"   value="3"    shortDescription="16 bit signed word big endian byte order" />
+          <Enumeration label="WORD_LE"   value="4"    shortDescription="16 bit signed word little endian byte order" />
+          <Enumeration label="UWORD_BE"  value="5"    shortDescription="16 bit unsigned word big endian byte order" />
+          <Enumeration label="UWORD_LE"  value="6"    shortDescription="16 bit unsigned word little endian byte order" />
+          <Enumeration label="DWORD_BE"  value="7"    shortDescription="16 bit signed double word big endian byte order" />
+          <Enumeration label="DWORD_LE"  value="8"    shortDescription="16 bit signed double word little endian byte order" />
+          <Enumeration label="UDWORD_BE" value="9"    shortDescription="16 bit signed unsigned double word big endian byte order" />
+          <Enumeration label="UDWORD_LE" value="10"   shortDescription="16 bit signed unsigned double word little endian byte order" />
+          <Enumeration label="FLOAT_BE"  value="11"   shortDescription="32 bit single precision IEEE-754 floating point number, big endian byte order" />
+          <Enumeration label="FLOAT_LE"  value="12"   shortDescription="32 bit single precision IEEE-754 floating point number, little endian byte order" />          
+        </EnumerationList>
+      </EnumeratedDataType>
+
+      <EnumeratedDataType name="WdtOperatorID" shortDescription="Watchpoint Definition Table (WDT) DataType Enumerated Types" >
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned" />
+        <EnumerationList>
+          <Enumeration label="NONE"   value="0xFF" shortDescription="Use for empty entries" />
+          <Enumeration label="LT"     value="1"    shortDescription="Less Than" />
+          <Enumeration label="LE"     value="2"    shortDescription="Less Than or Equal To" />
+          <Enumeration label="NE"     value="3"    shortDescription="Not Equal" />
+          <Enumeration label="EQ"     value="4"    shortDescription="Equal" />
+          <Enumeration label="GE"     value="5"    shortDescription="Greater Than or Equal To" />
+          <Enumeration label="GT"     value="6"    shortDescription="Greater Than" />
+          <Enumeration label="CUSTOM" value="7"    shortDescription="Use custom function" />
+        </EnumerationList>
+      </EnumeratedDataType>
+
+      <ContainerDataType name="WdtEntry" shortDescription="Watchpoint Definition Table (WDT) Entry">
+        <EntryList>
+          <Entry name="DataType" type="WdtDataType" shortDescription="Watchpoint Data Type (enumerated)"/> 
+          <Entry name="OperatorID" type="WdtOperatorID" shortDescription="Comparison type (enumerated)"/>
+          <Entry name="MessageID" type="CFE_SB/MsgId" shortDescription="Message ID for the message containing the watchpoint"/>
+          <Entry name="WatchpointOffset" type="BASE_TYPES/uint32" shortDescription="Byte offset from the beginning of the message (including any headers) to the watchpoint"/>
+          <Entry name="BitMask" type="BASE_TYPES/uint32" shortDescription="Value to be masked with watchpoint data prior to comparison"/>
+          <Entry name="ComparisonValue" type="MultiType" shortDescription="Value watchpoint data is compared against"/>
+          <Entry name="ResultAgeWhenStale" type="BASE_TYPES/uint32" shortDescription="Number of LC Sample Actionpoint commands that must be processed after comparison before result goes stale"/>
+          <Entry name="CustomFuncArgument" type="BASE_TYPES/uint32" shortDescription="Data passed to the custom function when Operator_ID is set to #LC_OPER_CUSTOM"/>
+        </EntryList>
+      </ContainerDataType>
+
+      <ContainerDataType name="WrtTransition" shortDescription="Watchpoint Transition Structure">
+        <EntryList>
+          <Entry name="Value" type="BASE_TYPES/uint32" shortDescription="Watchpoint value at comparison that caused the transition"/> 
+          <Entry name="DataType" type="WdtDataType" shortDescription="Same as Watchpoint Data Type (enumerated)"/>
+          <Entry name="Padding" type="BASE_TYPES/uint8" shortDescription="Structure padding">
+            <ArrayDimensions>
+              <Dimension size="3" />  
+            </ArrayDimensions>
+          </Entry>          
+          <Entry name="Timestamp" type="CFE_TIME/SysTime" shortDescription="Timstamp when the transition was detected"/>
+        </EntryList>
+      </ContainerDataType> 
+
+      <EnumeratedDataType name="WrtWatchResult" shortDescription="Watchpoint Results Table (WRT) WatchResult Enumerated Types" >
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned" />
+        <EnumerationList>
+          <Enumeration label="STALE" value="0xFF" shortDescription="Watchpoint stale" />
+          <Enumeration label="FALSE" value="0"    shortDescription="Watchpoint false, must be zero for RPN evaluation" />
+          <Enumeration label="TRUE"  value="1"    shortDescription="Watchpoint true, must be one for RPN evaluation" />
+          <Enumeration label="ERROR" value="2"    shortDescription="Watchpoint error" />
+        </EnumerationList>
+      </EnumeratedDataType>
+
+      <ContainerDataType name="WrtEntry" shortDescription="Watchpoint Results Table (WRT) Entry">
+        <EntryList>
+          <Entry name="WatchResult" type="WrtWatchResult" shortDescription="Result for the last evaluation of this watchpoint (enumerated) "/>
+          <Entry name="Padding" type="BASE_TYPES/uint8" shortDescription="Structure padding">
+            <ArrayDimensions>
+              <Dimension size="3" />  
+            </ArrayDimensions>
+          </Entry>      
+          <Entry name="CountdownToStale" type="BASE_TYPES/uint32" shortDescription="Number of LC Sample Actionpoint commands still to be processed before WatchResult becomes stale"/>
+          <Entry name="EvaluationCount" type="BASE_TYPES/uint32" shortDescription="How many times this watchpoint has been evaluated"/>
+          <Entry name="FalseToTrueCount" type="BASE_TYPES/uint32" shortDescription="How many times this watchpoint has transitioned from FALSE to TRUE"/>
+          <Entry name="ConsecutiveTrueCount" type="BASE_TYPES/uint32" shortDescription="Number of consecutive times this watchpoint has evaluated to TRUE"/>
+          <Entry name="CumulativeTrueCount" type="BASE_TYPES/uint32" shortDescription="Total number of times this watchpoint has evaluated to TRUE"/>
+          <Entry name="LastFalseToTrue" type="WrtTransition" shortDescription="Last transition from FALSE to TRUE"/>
+          <Entry name="LastTrueToFalse" type="WrtTransition" shortDescription="Last transition from TRUE to FALSE"/>          
+        </EntryList>
+      </ContainerDataType>
+
+      <EnumeratedDataType name="ArtActionResult" shortDescription="Actionpoint Results Table (ART) ActionResult Enumerated Types" >
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned" />
+        <EnumerationList>
+          <Enumeration label="STALE" value="0xFF" shortDescription="Actionpoint stale" />
+          <Enumeration label="PASS"  value="0"    shortDescription="Actionpoint pass" />
+          <Enumeration label="FAIL"  value="1"    shortDescription="Actionpoint fail" />
+          <Enumeration label="ERROR" value="2"    shortDescription="Actionpoint error" />
+        </EnumerationList>
+      </EnumeratedDataType>
+
+      <ContainerDataType name="ArtEntry" shortDescription="Actionpoint Results Table (ART) Entry">
+        <EntryList>
+          <Entry name="ActionResult" type="ArtActionResult" shortDescription="Result for the last sample of this actionpoint"/>
+          <Entry name="CurrentState" type="ApState" shortDescription="Current state of this actionpoint"/>
+          <Entry name="Padding" type="BASE_TYPES/uint16" shortDescription="Structure padding"/>
+          <Entry name="PassiveAPCount" type="BASE_TYPES/uint32" shortDescription="Total number of times RTS not invoked because this AP was passive"/>
+          <Entry name="FailToPassCount" type="BASE_TYPES/uint32" shortDescription="How many times this actionpoint has transitioned from Fail to Pass"/>
+          <Entry name="PassToFailCount" type="BASE_TYPES/uint32" shortDescription="How many times this actionpoint has transitioned from Pass to Fail"/>
+          <Entry name="ConsecutiveFailCount" type="BASE_TYPES/uint32" shortDescription="Number of consecutive times this actionpoint has evaluated to Fail"/>
+          <Entry name="CumulativeFailCount" type="BASE_TYPES/uint32" shortDescription="Total number of times this actionpoint has evaluated to Fail"/>
+          <Entry name="CumulativeRTSExecCount" type="BASE_TYPES/uint32" shortDescription="Total number of times an RTS request has been sent for this actionpoint"/>
+          <Entry name="CumulativeEventMsgsSent" type="BASE_TYPES/uint32" shortDescription="Total number of event messages sent"/>
+        </EntryList>
+      </ContainerDataType>
+
+      <EnumeratedDataType name="AdtRPNOperator" shortDescription="Actionpoint Definition Table (ADT) Reverse Polish Operators" >
+        <IntegerDataEncoding sizeInBits="16" encoding="unsigned" />
+        <EnumerationList>
+          <Enumeration label="AND"   value="0xFFF1" shortDescription="RPN and operator" />
+          <Enumeration label="OR"    value="0xFFF2" shortDescription="RPN or operator" />
+          <Enumeration label="XOR"   value="0xFFF3" shortDescription="RPN xor operator" />
+          <Enumeration label="NOT"   value="0xFFF4" shortDescription="RPN not operator" />
+          <Enumeration label="EQUAL" value="0xFFF5" shortDescription="RPN equal operator" />
+        </EnumerationList>
+      </EnumeratedDataType>
+
+      <EnumeratedDataType name="WdtValErr" shortDescription="Watchpoint Definition Table (WDT) Validation Error Enumerated Types" >
+        <IntegerDataEncoding sizeInBits="32" encoding="unsigned" />
+        <EnumerationList>
+          <Enumeration label="NONE"     value="0" shortDescription="No error" />
+          <Enumeration label="DATATYPE" value="1" shortDescription="Invalid DataType" />
+          <Enumeration label="OPER"     value="2" shortDescription="Invalid OperatorID" />
+          <Enumeration label="MID"      value="3" shortDescription="Invalid MessageID" />
+          <Enumeration label="FPNAN"    value="4" shortDescription="ComparisonValue is NAN float" />
+          <Enumeration label="FPINF"    value="5" shortDescription="ComparisonValue is infinite float" />
+        </EnumerationList>
+      </EnumeratedDataType>
+
+      <EnumeratedDataType name="AdtValErr" shortDescription="Actionpoint Definition Table (WDT) Validation Error Enumerated Types" >
+        <IntegerDataEncoding sizeInBits="32" encoding="unsigned" />
+        <EnumerationList>
+          <Enumeration label="NONE"     value="0" shortDescription="No error" />
+          <Enumeration label="DEFSTATE" value="1" shortDescription="Invalid DefaultState" />
+          <Enumeration label="RTSID"    value="2" shortDescription="Invalid RTSId" />
+          <Enumeration label="FAILCNT"  value="3" shortDescription="MaxFailsBeforeRTS is zero" />
+          <Enumeration label="EVTTYPE"  value="4" shortDescription="Invalid EventType" />
+          <Enumeration label="RPN"      value="5" shortDescription="Invalid Reverse Polish Expression" />
+        </EnumerationList>
+      </EnumeratedDataType>
 
     </DataTypeSet>
 

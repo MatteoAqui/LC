@@ -28,9 +28,10 @@
 ** Includes
 *************************************************************************/
 #include "lc_app.h"
-#include "lc_eventids.h"
-#include "lc_msgids.h"
-#include "lc_perfids.h"
+#include "lc_eds_cc.h"
+// #include "lc_eventids.h"
+// #include "lc_msgids.h"
+// #include "lc_perfids.h"
 #include "lc_version.h"
 #include "lc_cmds.h"
 #include "lc_dispatch.h"
@@ -40,6 +41,25 @@
 #include "lc_platform_cfg.h"
 #include "lc_mission_cfg.h" /* Leave these two last to make sure all   */
 #include "lc_verify.h"      /* LC configuration parameters are checked */
+
+/***********************/
+/** Macro Definitions **/
+/***********************/
+
+/* Convenience macros */
+#define  INITBL_OBJ    (&(LC_AppData.IniTbl))
+#define  CMDMGR_OBJ    (&(LC_AppData.CmdMgr))
+#define  TBLMGR_OBJ    (&(LC_AppData.TblMgr))
+
+/**********************/
+/** File Global Data **/
+/**********************/
+
+/* 
+** Must match DECLARE ENUM() declaration in app_cfg.h
+** Defines "static INILIB_CfgEnum_t IniCfgEnum"
+*/
+DEFINE_ENUM(Config,APP_CONFIG)  
 
 /************************************************************************
 ** LC Global Data
@@ -63,7 +83,7 @@ void LC_AppMain(void)
     /*
     ** Performance Log, Start
     */
-    CFE_ES_PerfLogEntry(LC_APPMAIN_PERF_ID);
+    // CFE_ES_PerfLogEntry(LC_APPMAIN_PERF_ID); // Moved to LC_AppInit()
 
     /*
     ** Perform application specific initialization
@@ -94,7 +114,7 @@ void LC_AppMain(void)
         /*
         ** Performance Log, Stop
         */
-        CFE_ES_PerfLogExit(LC_APPMAIN_PERF_ID);
+        CFE_ES_PerfLogExit(LC_AppData.PerfId);
 
         /*
         ** Pend on the arrival of the next Software Bus message
@@ -104,7 +124,7 @@ void LC_AppMain(void)
         /*
         ** Performance Log, Start
         */
-        CFE_ES_PerfLogEntry(LC_APPMAIN_PERF_ID);
+        CFE_ES_PerfLogEntry(LC_AppData.PerfId);
 
         /*
         ** Process the software bus message
@@ -156,7 +176,7 @@ void LC_AppMain(void)
     /*
     ** Performance Log, Stop
     */
-    CFE_ES_PerfLogExit(LC_APPMAIN_PERF_ID);
+    CFE_ES_PerfLogExit(LC_AppData.PerfId);
 
     /*
     ** Do not update CDS if inactive or startup was incomplete
@@ -180,7 +200,7 @@ void LC_AppMain(void)
 
 CFE_Status_t LC_AppInit(void)
 {
-    CFE_Status_t Status = CFE_SUCCESS;
+    CFE_Status_t Status = APP_C_FW_CFS_ERROR;
 
     /*
     ** Zero out the global data structures...
@@ -189,10 +209,33 @@ CFE_Status_t LC_AppInit(void)
     memset(&LC_AppData, 0, sizeof(LC_AppData));
 
     /*
+    ** Read JSON INI Table
+    */
+    
+    if (INITBL_Constructor(INITBL_OBJ, LC_INI_FILENAME, &IniCfgEnum))
+    {
+    
+        LC_AppData.PerfId = INITBL_GetIntConfig(INITBL_OBJ, CFG_APP_PERF_ID);
+        CFE_ES_PerfLogEntry(LC_AppData.PerfId);
+
+        LC_AppData.WDTSearchPerfId = INITBL_GetIntConfig(INITBL_OBJ, CFG_WDT_SEARCH_PERF_ID);
+
+        LC_AppData.CmdMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, LC_CMD_TOPICID));
+        LC_AppData.SendHkMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, LC_SEND_HK_TOPICID));
+        LC_AppData.SampleAp = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, LC_SAMPLE_AP_TOPICID));
+        LC_AppData.HkTlmMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, LC_HK_TLM_TOPICID));
+
+        Status = CFE_SUCCESS;
+    
+    } /* End if INITBL Constructed */
+
+    /*
     ** Initialize event services
     */
-    Status = LC_EvsInit();
-
+    if (Status == CFE_SUCCESS)
+    {
+        Status = LC_EvsInit();
+    }
     /*
     ** Initialize software bus
     */
@@ -263,13 +306,13 @@ CFE_Status_t LC_SbInit(void)
     /*
     ** Initialize housekeeping packet...
     */
-    CFE_MSG_Init(CFE_MSG_PTR(LC_OperData.HkPacket.TelemetryHeader), CFE_SB_ValueToMsgId(LC_HK_TLM_MID),
+    CFE_MSG_Init(CFE_MSG_PTR(LC_OperData.HkPacket.TelemetryHeader), LC_AppData.HkTlmMid,
                  sizeof(LC_HkPacket_t));
 
     /*
     ** Create Software Bus message pipe...
     */
-    Status = CFE_SB_CreatePipe(&LC_OperData.CmdPipe, LC_PIPE_DEPTH, LC_PIPE_NAME);
+    Status = CFE_SB_CreatePipe(&LC_OperData.CmdPipe, INITBL_GetIntConfig(INITBL_OBJ, CFG_APP_CMD_PIPE_DEPTH), INITBL_GetStrConfig(INITBL_OBJ, CFG_APP_CMD_PIPE_NAME));
     if (Status != CFE_SUCCESS)
     {
         CFE_EVS_SendEvent(LC_CR_PIPE_ERR_EID, CFE_EVS_EventType_ERROR, "Error Creating LC Pipe, RC=0x%08X",
@@ -281,11 +324,11 @@ CFE_Status_t LC_SbInit(void)
         /*
         ** Subscribe to Housekeeping request messages...
         */
-        Status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(LC_SEND_HK_MID), LC_OperData.CmdPipe);
+        Status = CFE_SB_Subscribe(LC_AppData.SendHkMid, LC_OperData.CmdPipe);
         if (Status != CFE_SUCCESS)
         {
             CFE_EVS_SendEvent(LC_SUB_HK_REQ_ERR_EID, CFE_EVS_EventType_ERROR,
-                              "Error Subscribing to HK Request, MID=0x%08X, RC=0x%08X", LC_SEND_HK_MID,
+                              "Error Subscribing to HK Request, MID=0x%08X, RC=0x%08X", LC_AppData.SendHkMid,
                               (unsigned int)Status);
         }
     }
@@ -295,11 +338,11 @@ CFE_Status_t LC_SbInit(void)
         /*
         ** Subscribe to LC ground command messages...
         */
-        Status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(LC_CMD_MID), LC_OperData.CmdPipe);
+        Status = CFE_SB_Subscribe(LC_AppData.CmdMid, LC_OperData.CmdPipe);
         if (Status != CFE_SUCCESS)
         {
             CFE_EVS_SendEvent(LC_SUB_GND_CMD_ERR_EID, CFE_EVS_EventType_ERROR,
-                              "Error Subscribing to GND CMD, MID=0x%08X, RC=0x%08X", LC_CMD_MID, (unsigned int)Status);
+                              "Error Subscribing to GND CMD, MID=0x%08X, RC=0x%08X", LC_AppData.CmdMid, (unsigned int)Status);
         }
     }
 
@@ -308,11 +351,11 @@ CFE_Status_t LC_SbInit(void)
         /*
         ** Subscribe to LC internal actionpoint sample messages...
         */
-        Status = CFE_SB_Subscribe(CFE_SB_ValueToMsgId(LC_SAMPLE_AP_MID), LC_OperData.CmdPipe);
+        Status = CFE_SB_Subscribe(LC_AppData.SampleAp, LC_OperData.CmdPipe);
         if (Status != CFE_SUCCESS)
         {
             CFE_EVS_SendEvent(LC_SUB_SAMPLE_CMD_ERR_EID, CFE_EVS_EventType_ERROR,
-                              "Error Subscribing to Sample CMD, MID=0x%08X, RC=0x%08X", LC_SAMPLE_AP_MID,
+                              "Error Subscribing to Sample CMD, MID=0x%08X, RC=0x%08X", LC_AppData.SampleAp,
                               (unsigned int)Status);
         }
     }
@@ -864,7 +907,7 @@ CFE_Status_t LC_LoadDefaultTables(void)
     /*
     ** Load default watchpoint definition table (WDT)
     */
-    Result = CFE_TBL_Load(LC_OperData.WDTHandle, CFE_TBL_SRC_FILE, LC_WDT_FILENAME);
+    Result = CFE_TBL_Load(LC_OperData.WDTHandle, CFE_TBL_SRC_FILE, INITBL_GetStrConfig(INITBL_OBJ, LC_WDT_FILENAME));
 
     if (Result == CFE_SUCCESS)
     {
@@ -876,7 +919,7 @@ CFE_Status_t LC_LoadDefaultTables(void)
         ** Task initialization fails without this table
         */
         CFE_EVS_SendEvent(LC_WDT_LOAD_ERR_EID, CFE_EVS_EventType_ERROR, "Error (RC=0x%08X) Loading WDT with '%s'",
-                          (unsigned int)Result, LC_WDT_FILENAME);
+                          (unsigned int)Result, INITBL_GetStrConfig(INITBL_OBJ, LC_WDT_FILENAME));
     }
 
     if (Result == CFE_SUCCESS)
@@ -898,7 +941,7 @@ CFE_Status_t LC_LoadDefaultTables(void)
         /*
         ** Load default actionpoint definition table (ADT)
         */
-        Result = CFE_TBL_Load(LC_OperData.ADTHandle, CFE_TBL_SRC_FILE, LC_ADT_FILENAME);
+        Result = CFE_TBL_Load(LC_OperData.ADTHandle, CFE_TBL_SRC_FILE, INITBL_GetStrConfig(INITBL_OBJ, LC_ADT_FILENAME));
 
         if (Result == CFE_SUCCESS)
         {
@@ -910,7 +953,7 @@ CFE_Status_t LC_LoadDefaultTables(void)
             ** Task initialization fails without this table
             */
             CFE_EVS_SendEvent(LC_ADT_LOAD_ERR_EID, CFE_EVS_EventType_ERROR, "Error (RC=0x%08X) Loading ADT with '%s'",
-                              (unsigned int)Result, LC_ADT_FILENAME);
+                              (unsigned int)Result, INITBL_GetStrConfig(INITBL_OBJ, LC_ADT_FILENAME));
         }
     }
 

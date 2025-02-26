@@ -286,7 +286,7 @@ void LC_CheckMsgForWPs(CFE_SB_MsgId_t MessageID, const CFE_SB_Buffer_t *BufPtr)
         }
 
         /* Performance Log (start time counter) */
-        CFE_ES_PerfLogEntry(LC_WDT_SEARCH_PERF_ID);
+        CFE_ES_PerfLogEntry(LC_AppData.WDTSearchPerfId);
 
         /* Get start of linked list (all MID's with same hash result) */
         MessageList = LC_OperData.HashTable[LC_GetHashTableIndex(MessageID)];
@@ -328,7 +328,7 @@ void LC_CheckMsgForWPs(CFE_SB_MsgId_t MessageID, const CFE_SB_Buffer_t *BufPtr)
         }
 
         /* Performance Log (stop time counter) */
-        CFE_ES_PerfLogExit(LC_WDT_SEARCH_PERF_ID);
+        CFE_ES_PerfLogExit(LC_AppData.WDTSearchPerfId);
 
         if (WatchPtFound == true)
         {

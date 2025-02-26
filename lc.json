@@ -20,7 +20,7 @@
       "load_addr": 0,
       "exception-action": 0,
       "app-framework": "cfe",
-      "tables": ["lc_ini.json", "lc_def_adt.json", "lc_def_wdt.json"]
+      "tables": ["lc_ini.json"]
    },
    
    "requires": ["app_c_fw"]

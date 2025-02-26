@@ -28,7 +28,8 @@
 /************************************************************************
  * Includes
  ************************************************************************/
-#include "cfe.h"
+#include "app_cfg.h"
+ #include "cfe.h"
 #include "lc_msg.h"
 #include "lc_tbl.h"
 
@@ -49,7 +50,7 @@
  * \name LC Command Pipe Parameters
  * \{
  */
-#define LC_PIPE_NAME "LC_CMD_PIPE"
+// #define LC_PIPE_NAME "LC_CMD_PIPE"
 /**\}*/
 
 /**
@@ -183,6 +184,18 @@ typedef struct
  */
 typedef struct
 {
+    /* App Framework parameters */
+    INITBL_Class_t    IniTbl;
+    CMDMGR_Class_t    CmdMgr;
+    TBLMGR_Class_t    TblMgr;
+    /* LC App State & Contained Objects */
+    uint32            PerfId;
+    uint32            WDTSearchPerfId;
+    CFE_SB_MsgId_t    CmdMid;
+    CFE_SB_MsgId_t    SendHkMid;
+    CFE_SB_MsgId_t    SampleApMid;
+    CFE_SB_MsgId_t    HkTlmMid;
+    
     uint16 CmdCount;    /**< \brief Command Counter                        */
     uint16 CmdErrCount; /**< \brief Command Error Counter                  */
 

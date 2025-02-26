@@ -55,11 +55,13 @@
 #define LC_ADT_TABLENAME "LC_ADT"
 #define LC_WRT_TABLENAME "LC_WRT"
 #define LC_ART_TABLENAME "LC_ART"
-/* TODO: default_lc_tbldefs and default_lc_tblstruct (possibly in lc.xml)*/
 
+/* ---  From default_lc_tbldefs --- */ 
+#define LC_CDS_SAVED     0xF0F0 // CDS saved on exit 
+#define LC_CDS_NOT_SAVED 0x0F0F // CDS not saved on exit
+#define LC_BITMASK_NONE 0xFFFFFFFF // Use for no masking
 
-/* A bunch of parameters from default_lc_msgdefs.h are now defined in lc.xml, and
-   thus are part of lc_eds_typedefs.h  
+/* Many parameters from default_lc_msgdefs.h are now defined in lc.xml, thus are part of lc_eds_typedefs.h  
    The naming convention is different, so these parameters are redifined here to 
    try limit changes in the rest of the source code (as a start, this can be changed later on)
 */
@@ -95,6 +97,84 @@
 #ifndef LC_OMIT_DEPRECATED
 #define LC_ACTION_NOT_USED LC_ApState_NOT_USED
 #endif
+
+/* Similarly for default_lc_tbldefs.h types, now defined in lc.xml, and thus part of lc_eds_typedefs.h  
+   The naming convention is different, so these parameters are redifined here to 
+   try limit changes in the rest of the source code (as a start, this can be changed later on)
+*/
+#define LC_DATA_WATCH_NOT_USED  LC_WdtDataType_NOT_USED   
+#define LC_DATA_WATCH_BYTE      LC_WdtDataType_BYTE       
+#define LC_DATA_WATCH_UBYTE     LC_WdtDataType_UBYTE     
+#define LC_DATA_WATCH_WORD_BE   LC_WdtDataType_WORD_BE   
+#define LC_DATA_WATCH_WORD_LE   LC_WdtDataType_WORD_LE   
+#define LC_DATA_WATCH_UWORD_BE  LC_WdtDataType_UWORD_BE  
+#define LC_DATA_WATCH_UWORD_LE  LC_WdtDataType_UWORD_LE  
+#define LC_DATA_WATCH_DWORD_BE  LC_WdtDataType_DWORD_BE  
+#define LC_DATA_WATCH_DWORD_LE  LC_WdtDataType_DWORD_LE  
+#define LC_DATA_WATCH_UDWORD_BE LC_WdtDataType_UDWORD_BE 
+#define LC_DATA_WATCH_UDWORD_LE LC_WdtDataType_UDWORD_LE 
+#define LC_DATA_WATCH_FLOAT_BE  LC_WdtDataType_FLOAT_BE 
+#define LC_DATA_WATCH_FLOAT_LE  LC_WdtDataType_FLOAT_LE 
+
+#define LC_OPER_NONE   LC_WdtOperatorID_NONE   
+#define LC_OPER_LT     LC_WdtOperatorID_LT     
+#define LC_OPER_LE     LC_WdtOperatorID_LE     
+#define LC_OPER_NE     LC_WdtOperatorID_NE     
+#define LC_OPER_EQ     LC_WdtOperatorID_EQ     
+#define LC_OPER_GE     LC_WdtOperatorID_GE     
+#define LC_OPER_GT     LC_WdtOperatorID_GT     
+#define LC_OPER_CUSTOM LC_WdtOperatorID_CUSTOM 
+
+#define LC_RPN_AND   LC_AdtRPNOperator_AND   
+#define LC_RPN_OR    LC_AdtRPNOperator_OR    
+#define LC_RPN_XOR   LC_AdtRPNOperator_XOR   
+#define LC_RPN_NOT   LC_AdtRPNOperator_NOT   
+#define LC_RPN_EQUAL LC_AdtRPNOperator_EQUAL 
+
+#define LC_WATCH_STALE LC_WrtWatchResult_STALE  
+#define LC_WATCH_FALSE LC_WrtWatchResult_FALSE  
+#define LC_WATCH_TRUE  LC_WrtWatchResult_TRUE   
+#define LC_WATCH_ERROR LC_WrtWatchResult_ERROR  
+
+#define LC_ACTION_STALE  LC_ArtActionResult_STALE
+#define LC_ACTION_PASS   LC_ArtActionResult_PASS 
+#define LC_ACTION_FAIL   LC_ArtActionResult_FAIL 
+#define LC_ACTION_ERROR  LC_ArtActionResult_ERROR
+
+#define LC_WDTVAL_ERR_NONE     LC_WdtValErr_NONE    
+#define LC_WDTVAL_ERR_DATATYPE LC_WdtValErr_DATATYPE
+#define LC_WDTVAL_ERR_OPER     LC_WdtValErr_OPER    
+#define LC_WDTVAL_ERR_MID      LC_WdtValErr_MID     
+#define LC_WDTVAL_ERR_FPNAN    LC_WdtValErr_FPNAN   
+#define LC_WDTVAL_ERR_FPINF    LC_WdtValErr_FPINF   
+
+#define LC_ADTVAL_ERR_NONE     LC_AdtValErr_NONE     
+#define LC_ADTVAL_ERR_DEFSTATE LC_AdtValErr_DEFSTATE 
+#define LC_ADTVAL_ERR_RTSID    LC_AdtValErr_RTSID    
+#define LC_ADTVAL_ERR_FAILCNT  LC_AdtValErr_FAILCNT  
+#define LC_ADTVAL_ERR_EVTTYPE  LC_AdtValErr_EVTTYPE  
+#define LC_ADTVAL_ERR_RPN      LC_AdtValErr_RPN      
+
+#ifndef LC_OMIT_DEPRECATED
+
+#define LC_NO_OPER       LC_OPER_NONE
+#define LC_NO_BITMASK    LC_BITMASK_NONE
+#define LC_ADTVAL_NO_ERR LC_ADTVAL_ERR_NONE
+#define LC_WDTVAL_NO_ERR LC_WDTVAL_ERR_NONE
+
+#define LC_DATA_NOT_USED  LC_DATA_WATCH_NOT_USED
+#define LC_DATA_BYTE      LC_DATA_WATCH_BYTE
+#define LC_DATA_UBYTE     LC_DATA_WATCH_UBYTE
+#define LC_DATA_WORD_BE   LC_DATA_WATCH_WORD_BE
+#define LC_DATA_WORD_LE   LC_DATA_WATCH_WORD_LE
+#define LC_DATA_UWORD_BE  LC_DATA_WATCH_UWORD_BE
+#define LC_DATA_UWORD_LE  LC_DATA_WATCH_UWORD_LE
+#define LC_DATA_DWORD_BE  LC_DATA_WATCH_DWORD_BE
+#define LC_DATA_DWORD_LE  LC_DATA_WATCH_DWORD_LE
+#define LC_DATA_UDWORD_BE LC_DATA_WATCH_UDWORD_BE
+#define LC_DATA_UDWORD_LE LC_DATA_WATCH_UDWORD_LE
+#define LC_DATA_FLOAT_BE  LC_DATA_WATCH_FLOAT_BE
+#define LC_DATA_FLOAT_LE  LC_DATA_WATCH_FLOAT_LE
 
 /* ---------- TODO/REVIEW (from app_c_demo) ---------- */
 
@@ -147,21 +227,20 @@
 */
 
 #define CFG_APP_CFE_NAME  APP_CFE_NAME  // TODO: check if something equivalent is used anywhere
-#define CFG_APP_PERF_ID   APP_PERF_ID  // TODO: retrieve CFG_APP_PERF_ID from table and pass it to LC_APPMAIN_PERF_ID in code
+#define CFG_APP_PERF_ID   APP_PERF_ID  // Passed to LC_AppData.PerfId in code
 
-#define CFG_APP_CMD_PIPE_NAME   APP_CMD_PIPE_NAME  // TODO: retrieve CFG_APP_CMD_PIPE_NAME and pass it to LC_PIPE_NAME in code
-#define CFG_APP_CMD_PIPE_DEPTH  APP_CMD_PIPE_DEPTH  // TODO: retrieve CFG_APP_CMD_PIPE_DEPTH and pass it to LC_PIPE_DEPTH in code
+#define CFG_APP_CMD_PIPE_NAME   APP_CMD_PIPE_NAME   // Retrieved in CFE_SB_CreatePipe call
+#define CFG_APP_CMD_PIPE_DEPTH  APP_CMD_PIPE_DEPTH  // Retrieved in CFE_SB_CreatePipe call
+ 
+#define CFG_LC_CMD_TOPICID       LC_CMD_TOPICID       // Passed to LC_AppData.CmdMid in code
+#define CFG_LC_SEND_HK_TOPICID   LC_SEND_HK_TOPICID   // Passed to LC_AppData.SendHkMid in code
+#define CFG_LC_SAMPLE_AP_TOPICID LC_SAMPLE_AP_TOPICID // Passed to LC_AppData.SampleApMid in code
+#define CFG_LC_HK_TLM_TOPICID    LC_HK_TLM_TOPICID    // Passed to LC_AppData.HkTlmMid in code
 
-// TODO: retrieve TOPICID from ini table and pass to respective MID
-#define CFG_LC_CMD_TOPICID      LC_CMD_TOPICID  
-#define CFG_LC_SEND_HK_TOPICID  LC_SEND_HK_TOPICID
-#define CFG_LC_HK_TLM_TOPICID   LC_HK_TLM_TOPICID
+#define CFG_WDT_SEARCH_PERF_ID  LC_WDT_SEARCH_PERF_ID  // Passed to LC_AppData.WDTSearchPerfId in code
 
-#define CFG_WDT_SEARCH_PERF_ID  LC_WDT_SEARCH_PERF_ID  // TODO: retrieve CFG_WDT_SEARCH_PERF_ID and pass it to LC_WDT_SEARCH_PERF_ID in code
-
-// TODO: retrieve CFG_XXX_TBL_FILE and pass it to LC_XXX_FILENAME in code
-#define CFG_WDT_TBL_FILE  LC_WDT_FILENAME
-#define CFG_ADT_TBL_FILE  LC_ADT_FILENAME
+#define CFG_WDT_TBL_FILE  LC_WDT_FILENAME  // Retrieved in CFE_TBL_Load and CFE_EVS_SendEvent calls
+#define CFG_ADT_TBL_FILE  LC_ADT_FILENAME  // Retrieved in CFE_TBL_Load and CFE_EVS_SendEvent calls
 
 #define APP_CONFIG(XX) \
    XX(APP_CFE_NAME,char*) \
@@ -170,6 +249,7 @@
    XX(APP_CMD_PIPE_DEPTH,uint32) \
    XX(LC_CMD_TOPICID,uint32) \
    XX(LC_SEND_HK_TOPICID,uint32) \
+   XX(LC_SAMPLE_AP_TOPICID,uint32) \
    XX(LC_HK_TLM_TOPICID,uint32) \
    XX(LC_WDT_SEARCH_PERF_ID,uint32)\
    XX(LC_WDT_FILENAME,char*) \
@@ -274,28 +354,5 @@ DECLARE_ENUM(Config,APP_CONFIG)
  *  the user defined event for actionpoint table index 25.
  */
 #define LC_BASE_AP_EID (APP_C_FW_APP_BASE_EID + 1000)
-
-
-// /******************************************************************************
-// ** Histogram Macros
-// */
-
-// #define HISTOGRAM_MAX_BINS  5
-
-// /******************************************************************************
-// ** Histogram Log Macros
-// */
-
-// #define HISTOGRAM_LOG_FILE_EXT_MAX_LEN  5  /* Includes '.' and null terminator */
-
-
-// /******************************************************************************
-// ** Histogram Table Macros
-// */
-
-// #define HISTOGRAM_TBL_JSON_MAX_OBJ          10
-// #define HISTOGRAM_TBL_JSON_FILE_MAX_CHAR  4090 
-// #define HISTOGRAM_TBL_NAME                "Histogram" 
-
 
 #endif /* _app_cfg_ */
