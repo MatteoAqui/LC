@@ -35,18 +35,20 @@
 
 /* --- From default_lc_interface_cfg.h --- */
 
-#define LC_MAX_WATCHPOINTS 176
-#define LC_MAX_ACTIONPOINTS 176
-#define LC_MAX_ACTION_TEXT 32
-#define LC_MAX_RPN_EQU_SIZE 20
+// #define LC_MAX_WATCHPOINTS 176
+// #define LC_MAX_ACTIONPOINTS 176
+// #define LC_MAX_ACTION_TEXT 32
+// #define LC_MAX_RPN_EQU_SIZE 20
 
 /* --- From default_lc_msgdefs.h --- */
 #define LC_ALL_ACTIONPOINTS 0xFFFF // Special number indicating all actionpoints 
 #define LC_ALL_WATCHPOINTS  0xFFFF // Special number indicating all watchpoints 
-#define LC_HKWR_NUM_BYTES                                                         \
-    (((LC_MAX_WATCHPOINTS + 15) / 16) * 4) // 2 bits per WP and keeping array on longword boundary 
-#define LC_HKAR_NUM_BYTES                                                        \
-    (((LC_MAX_ACTIONPOINTS + 7) / 8) * 4) // 4 bits per AP and keeping array on longword boundary
+
+// #define MAX_WATCHPOINTS 176
+// #define MAX_ACTIONPOINTS 176
+// #define LC_HKWR_NUM_BYTES (((LC_MAX_WATCHPOINTS + 15) / 16) * 4) // 2 bits per WP and keeping array on longword boundary
+// #define LC_HKAR_NUM_BYTES (((LC_MAX_ACTIONPOINTS + 7) / 8) * 4) // 4 bits per AP and keeping array on longword boundary
+
 
 /* --- From default_lc_internal_cfg.h --- */
 #define LC_MAX_VALID_ADT_RTSID 0xFFF0

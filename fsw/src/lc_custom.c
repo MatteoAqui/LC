@@ -27,11 +27,12 @@
 ** Includes
 *************************************************************************/
 #include "lc_custom.h"
-#include "lc_tbldefs.h"
-#include "lc_eventids.h"
+#include "lc_eds_cc.h"
+// #include "lc_tbldefs.h"
+// #include "lc_eventids.h"
 #include "lc_mission_cfg.h"
-#include "lc_msg.h"
-#include "lc_msgids.h"
+// #include "lc_msg.h"
+// #include "lc_msgids.h"
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */

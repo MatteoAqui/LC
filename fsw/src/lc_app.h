@@ -29,7 +29,7 @@
  * Includes
  ************************************************************************/
 #include "app_cfg.h"
- #include "cfe.h"
+#include "cfe.h"
 #include "lc_msg.h"
 #include "lc_tbl.h"
 

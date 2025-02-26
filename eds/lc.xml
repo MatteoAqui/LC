@@ -31,6 +31,18 @@
 <PackageFile xmlns="http://www.ccsds.org/schema/sois/seds">
   <Package name="LC" shortDescription="Limit Checker">
 
+    <Define name="MAX_ACTION_TEXT" value="32"  shortDescription="Maximum text lenght for action point result" />
+    <Define name="MAX_RPN_EQU_SIZE" value="20"  shortDescription="Maximum size of RPN equation" />
+
+    <Define name="MAX_WATCHPOINTS" value="176"  shortDescription="Maximum number of Watch Points" />
+    <Define name="MAX_ACTIONPOINTS" value="176"  shortDescription="Maximum number of Action Points" />
+    <!--These two are normally computed values, but there is no way of doing that in xml, so manually done
+        LC_HKWR_NUM_BYTES = (((LC_MAX_WATCHPOINTS + 15) / 16) * 4) // 2 bits per WP and keeping array on longword boundary
+        LC_HKAR_NUM_BYTES = (((LC_MAX_ACTIONPOINTS + 7) / 8) * 4) // 4 bits per AP and keeping array on longword boundary
+    -->
+    <Define name="HKWR_NUM_BYTES" value="(((${MAX_WATCHPOINTS} + 15) / 16) * 4)"  shortDescription="Maximum number of bytes for Watch Points results" />
+    <Define name="HKAR_NUM_BYTES" value="(((${MAX_ACTIONPOINTS} + 7) / 8) * 4)"  shortDescription="Maximum number of Action Points" />
+
     <DataTypeSet>
 
       <!-- Commands payload structure definitions -->
@@ -209,7 +221,7 @@
 
       <ArrayDataType name="WpResArray" dataTypeRef="WpRes">
         <DimensionList>
-          <Dimension size="${LC/LC_MAX_WATCHPOINTS}" />  
+          <Dimension size="${MAX_WATCHPOINTS}" />  
         </DimensionList>
       </ArrayDataType>
 
@@ -225,7 +237,7 @@
 
       <ArrayDataType name="ApResArray" dataTypeRef="ApRes">
         <DimensionList>
-          <Dimension size="${LC/LC_MAX_ACTIONPOINTS}" />
+          <Dimension size="${MAX_ACTIONPOINTS}" />
         </DimensionList>
       </ArrayDataType>
 
@@ -241,7 +253,7 @@
 
       <ArrayDataType name="ApResStatesArray" dataTypeRef="ApResState">
         <DimensionList>
-          <Dimension size="${LC/LC_MAX_ACTIONPOINTS}" />
+          <Dimension size="${MAX_ACTIONPOINTS}" />
         </DimensionList>
       </ArrayDataType>
       -->
@@ -286,12 +298,12 @@
 
           <Entry name="WPResults" type="BASE_TYPES/uint8" shortDescription="Packed watchpoint results data, 2 bits per watchpoint" >
             <ArrayDimensions>
-              <Dimension size="${LC/LC_HKWR_NUM_BYTES}"/>  
+              <Dimension size="${HKWR_NUM_BYTES}"/>  
             </ArrayDimensions>
           </Entry>    
           <Entry name="APResults" type="BASE_TYPES/uint8" shortDescription="Packed actionpoint results data, 2 bits per actionpoint" >
             <ArrayDimensions>
-              <Dimension size="${LC/LC_HKAR_NUM_BYTES}"/>  
+              <Dimension size="${HKAR_NUM_BYTES}"/>  
             </ArrayDimensions>
           </Entry>          
           
@@ -316,7 +328,7 @@
       </ContainerDataType>
 
       <!-- Tables types definitions -->
-      <StringDataType name="ActionText" length="${LC/LC_MAX_ACTION_TEXT}" />
+      <StringDataType name="ActionText" length="${MAX_ACTION_TEXT}" />
 
       <ContainerDataType name="AdtEntry" shortDescription="Actionpoint Definition Table (ADT) Entry">
         <EntryList>
@@ -328,7 +340,7 @@
           <Entry name="MaxFailsBeforeRTS" type="BASE_TYPES/uint16" shortDescription="How may consecutive failures before an RTS request is issued"/>
           <Entry name="RPNEquation" type="BASE_TYPES/uint16" shortDescription="Reverse Polish Equation that specifies when this actionpoint should fail">
             <ArrayDimensions>
-              <Dimension size="${LC/LC_MAX_RPN_EQU_SIZE}"/>  
+              <Dimension size="${MAX_RPN_EQU_SIZE}"/>  
             </ArrayDimensions>
           </Entry>      
           <Entry name="EventType" type="BASE_TYPES/uint16" shortDescription="Event type used for event msg if AP fails"/>

@@ -19,7 +19,7 @@
       "stack": 32768,
       "load_addr": 0,
       "exception-action": 0,
-      "app-framework": "cfe",
+      "app-framework": "osk",
       "tables": ["lc_ini.json"]
    },
    
