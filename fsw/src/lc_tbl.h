@@ -33,12 +33,12 @@
  *
  * This discrepancy can be worked around with a typedef for now
  */
-typedef LC_WdtEntry LC_WDTEntry_t;
-typedef LC_AdtEntry LC_ADTEntry_t;
+typedef LC_WdtEntry_t LC_WDTEntry_t;
+typedef LC_AdtEntry_t LC_ADTEntry_t;
 
-typedef LC_WrtEntry LC_WRTEntry_t;
-typedef LC_ArtEntry LC_ARTEntry_t;
+typedef LC_WrtEntry_t LC_WRTEntry_t;
+typedef LC_ArtEntry_t LC_ARTEntry_t;
 
-typedef LC_MultiType LC_MultiType_t;
+// typedef LC_MultiType LC_MultiType_t;
 
 #endif /* LC_TABLE_H */

@@ -27,10 +27,10 @@
 *************************************************************************/
 #include "lc_app.h"
 #include "lc_action.h"
-#include "lc_msgids.h"
-#include "lc_eventids.h"
+// #include "lc_msgids.h"
+// #include "lc_eventids.h"
 #include "lc_custom.h"
-#include "lc_platform_cfg.h"
+// #include "lc_platform_cfg.h"
 
 #include <string.h>
 

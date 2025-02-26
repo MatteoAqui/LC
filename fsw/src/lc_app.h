@@ -30,8 +30,9 @@
  ************************************************************************/
 #include "app_cfg.h"
 #include "cfe.h"
-#include "lc_msg.h"
+// #include "lc_msg.h"
 #include "lc_tbl.h"
+#include "lc_eds_defines.h"
 
 /************************************************************************
  * Macro Definitions
@@ -160,7 +161,7 @@ typedef struct
     uint16 MessageIDsCount; /**< \brief Count of unique MessageIDs referenced
                                         in the Watchpoint Definition Table   */
 
-    LC_HkPacket_t HkPacket; /**< \brief Housekeeping telemetry packet        */
+    LC_HkTlm_t HkPacket; /**< \brief Housekeeping telemetry packet        */
 
     uint32 TableResults; /**< \brief Table and CDS initialization results */
 
@@ -193,6 +194,7 @@ typedef struct
     uint32            WDTSearchPerfId;
     CFE_SB_MsgId_t    CmdMid;
     CFE_SB_MsgId_t    SendHkMid;
+    CFE_SB_MsgId_t    RtsReqMid;
     CFE_SB_MsgId_t    SampleApMid;
     CFE_SB_MsgId_t    HkTlmMid;
     

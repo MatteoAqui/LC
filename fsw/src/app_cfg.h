@@ -158,7 +158,6 @@
 #define LC_ADTVAL_ERR_RPN      LC_AdtValErr_RPN      
 
 #ifndef LC_OMIT_DEPRECATED
-
 #define LC_NO_OPER       LC_OPER_NONE
 #define LC_NO_BITMASK    LC_BITMASK_NONE
 #define LC_ADTVAL_NO_ERR LC_ADTVAL_ERR_NONE
@@ -177,6 +176,7 @@
 #define LC_DATA_UDWORD_LE LC_DATA_WATCH_UDWORD_LE
 #define LC_DATA_FLOAT_BE  LC_DATA_WATCH_FLOAT_BE
 #define LC_DATA_FLOAT_LE  LC_DATA_WATCH_FLOAT_LE
+#endif
 
 /* ---------- TODO/REVIEW (from app_c_demo) ---------- */
 
@@ -236,6 +236,7 @@
  
 #define CFG_LC_CMD_TOPICID       LC_CMD_TOPICID       // Passed to LC_AppData.CmdMid in code
 #define CFG_LC_SEND_HK_TOPICID   LC_SEND_HK_TOPICID   // Passed to LC_AppData.SendHkMid in code
+#define CFG_LC_RTS_REQ_MID       LC_RTS_REQ_MID       // Passed to LC_AppData.RtsReqMid in code
 #define CFG_LC_SAMPLE_AP_TOPICID LC_SAMPLE_AP_TOPICID // Passed to LC_AppData.SampleApMid in code
 #define CFG_LC_HK_TLM_TOPICID    LC_HK_TLM_TOPICID    // Passed to LC_AppData.HkTlmMid in code
 
@@ -251,6 +252,7 @@
    XX(APP_CMD_PIPE_DEPTH,uint32) \
    XX(LC_CMD_TOPICID,uint32) \
    XX(LC_SEND_HK_TOPICID,uint32) \
+   XX(LC_RTS_REQ_MID,uint32) \
    XX(LC_SAMPLE_AP_TOPICID,uint32) \
    XX(LC_HK_TLM_TOPICID,uint32) \
    XX(LC_WDT_SEARCH_PERF_ID,uint32)\

@@ -28,6 +28,8 @@
 *************************************************************************/
 #include "lc_custom.h"
 #include "lc_eds_cc.h"
+#include "app_cfg.h"
+#include "lc_app.h"
 // #include "lc_tbldefs.h"
 // #include "lc_eventids.h"
 #include "lc_mission_cfg.h"
@@ -43,16 +45,16 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void LC_ExecuteRTS(uint16 RTSId)
 {
-    LC_RTSRequestCmd_t RTSRequest;
+    LC_RtsRequest_t RTSRequest;
 
     memset(&RTSRequest, 0, sizeof(RTSRequest));
 
-    CFE_MSG_Init(CFE_MSG_PTR(RTSRequest.CommandHeader), CFE_SB_ValueToMsgId(LC_RTS_REQ_MID), sizeof(RTSRequest));
-    CFE_MSG_SetFcnCode(CFE_MSG_PTR(RTSRequest.CommandHeader), LC_RTS_REQ_CC);
+    CFE_MSG_Init(CFE_MSG_PTR(RTSRequest.CommandBase.CommandHeader), LC_AppData.RtsReqMid, sizeof(RTSRequest));
+    CFE_MSG_SetFcnCode(CFE_MSG_PTR(RTSRequest.CommandBase.CommandHeader), LC_RTS_REQUEST_CC);
 
     RTSRequest.Payload.RTSId = RTSId;
 
-    CFE_SB_TransmitMsg(CFE_MSG_PTR(RTSRequest.CommandHeader), true);
+    CFE_SB_TransmitMsg(CFE_MSG_PTR(RTSRequest.CommandBase.CommandHeader), true);
 
     return;
 }

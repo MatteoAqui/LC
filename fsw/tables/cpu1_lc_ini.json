@@ -11,6 +11,7 @@
  
        "LC_CMD_TOPICID": 0,
        "LC_SEND_HK_TOPICID": 0,
+       "LC_RTS_REQ_TOPICID": 0,
        "LC_SAMPLE_AP_TOPICID": 0,
        "LC_HK_TLM_TOPICID": 0,
 

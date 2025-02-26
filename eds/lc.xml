@@ -36,7 +36,7 @@
 
     <Define name="MAX_WATCHPOINTS" value="176"  shortDescription="Maximum number of Watch Points" />
     <Define name="MAX_ACTIONPOINTS" value="176"  shortDescription="Maximum number of Action Points" />
-    <!--These two are normally computed values, but there is no way of doing that in xml, so manually done
+    <!-- Computed values:
         LC_HKWR_NUM_BYTES = (((LC_MAX_WATCHPOINTS + 15) / 16) * 4) // 2 bits per WP and keeping array on longword boundary
         LC_HKAR_NUM_BYTES = (((LC_MAX_ACTIONPOINTS + 7) / 8) * 4) // 4 bits per AP and keeping array on longword boundary
     -->

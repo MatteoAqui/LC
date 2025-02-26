@@ -29,6 +29,7 @@
 *************************************************************************/
 #include "lc_app.h"
 #include "lc_eds_cc.h"
+#include "lc_eds_defines.h"
 // #include "lc_eventids.h"
 // #include "lc_msgids.h"
 // #include "lc_perfids.h"
@@ -222,7 +223,8 @@ CFE_Status_t LC_AppInit(void)
 
         LC_AppData.CmdMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, LC_CMD_TOPICID));
         LC_AppData.SendHkMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, LC_SEND_HK_TOPICID));
-        LC_AppData.SampleAp = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, LC_SAMPLE_AP_TOPICID));
+        LC_AppData.SampleApMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, LC_SAMPLE_AP_TOPICID));
+        LC_AppData.RtsReqMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, LC_RTS_REQ_MID));
         LC_AppData.HkTlmMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, LC_HK_TLM_TOPICID));
 
         Status = CFE_SUCCESS;
@@ -307,7 +309,7 @@ CFE_Status_t LC_SbInit(void)
     ** Initialize housekeeping packet...
     */
     CFE_MSG_Init(CFE_MSG_PTR(LC_OperData.HkPacket.TelemetryHeader), LC_AppData.HkTlmMid,
-                 sizeof(LC_HkPacket_t));
+                 sizeof(LC_HkTlm_t));
 
     /*
     ** Create Software Bus message pipe...
