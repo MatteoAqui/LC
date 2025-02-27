@@ -85,6 +85,8 @@ void LC_AppMain(void)
     ** Performance Log, Start
     */
     // CFE_ES_PerfLogEntry(LC_APPMAIN_PERF_ID); // Moved to LC_AppInit()
+    
+    CFE_EVS_Register(NULL, 0, CFE_EVS_NO_FILTER);
 
     /*
     ** Perform application specific initialization
@@ -224,7 +226,7 @@ CFE_Status_t LC_AppInit(void)
         LC_AppData.CmdMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, LC_CMD_TOPICID));
         LC_AppData.SendHkMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, LC_SEND_HK_TOPICID));
         LC_AppData.SampleApMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, LC_SAMPLE_AP_TOPICID));
-        LC_AppData.RtsReqMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, LC_RTS_REQ_MID));
+        LC_AppData.RtsReqMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, LC_RTS_REQ_TOPICID));
         LC_AppData.HkTlmMid = CFE_SB_ValueToMsgId(INITBL_GetIntConfig(INITBL_OBJ, LC_HK_TLM_TOPICID));
 
         Status = CFE_SUCCESS;

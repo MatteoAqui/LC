@@ -236,7 +236,7 @@
  
 #define CFG_LC_CMD_TOPICID       LC_CMD_TOPICID       // Passed to LC_AppData.CmdMid in code
 #define CFG_LC_SEND_HK_TOPICID   LC_SEND_HK_TOPICID   // Passed to LC_AppData.SendHkMid in code
-#define CFG_LC_RTS_REQ_MID       LC_RTS_REQ_MID       // Passed to LC_AppData.RtsReqMid in code
+#define CFG_LC_RTS_REQ_MID       LC_RTS_REQ_TOPICID       // Passed to LC_AppData.RtsReqMid in code
 #define CFG_LC_SAMPLE_AP_TOPICID LC_SAMPLE_AP_TOPICID // Passed to LC_AppData.SampleApMid in code
 #define CFG_LC_HK_TLM_TOPICID    LC_HK_TLM_TOPICID    // Passed to LC_AppData.HkTlmMid in code
 
@@ -252,7 +252,7 @@
    XX(APP_CMD_PIPE_DEPTH,uint32) \
    XX(LC_CMD_TOPICID,uint32) \
    XX(LC_SEND_HK_TOPICID,uint32) \
-   XX(LC_RTS_REQ_MID,uint32) \
+   XX(LC_RTS_REQ_TOPICID,uint32) \
    XX(LC_SAMPLE_AP_TOPICID,uint32) \
    XX(LC_HK_TLM_TOPICID,uint32) \
    XX(LC_WDT_SEARCH_PERF_ID,uint32)\
