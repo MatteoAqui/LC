@@ -26,6 +26,11 @@
 #define LC_VERIFY_H
 
 #include <stdint.h>
+#include "lc_eds_defines.h"
+#include "lc_eds_cc.h"
+#include "lc_eds_typedefs.h"
+#include "app_cfg.h"
+
 
 /*************************************************************************
  * Macro Definitions - defined in lc_mission_cfg.h
@@ -34,22 +39,22 @@
 /*
  * RTS request message ID
  */
-#ifndef LC_RTS_REQ_MID
-#error LC_RTS_REQ_MID must be defined!
-#elif LC_RTS_REQ_MID < 1
-#error LC_RTS_REQ_MID must be greater than zero
-#elif LC_RTS_REQ_MID > CFE_PLATFORM_SB_HIGHEST_VALID_MSGID
-#error LC_RTS_REQ_MID must not exceed CFE_PLATFORM_SB_HIGHEST_VALID_MSGID
-#endif
+// #ifndef LC_RTS_REQ_MID
+// #error LC_RTS_REQ_MID must be defined!
+// #elif LC_RTS_REQ_MID < 1
+// #error LC_RTS_REQ_MID must be greater than zero
+// #elif LC_RTS_REQ_MID > CFE_PLATFORM_SB_HIGHEST_VALID_MSGID
+// #error LC_RTS_REQ_MID must not exceed CFE_PLATFORM_SB_HIGHEST_VALID_MSGID
+// #endif
 
 /*
  * RTS request command code
  */
-#ifndef LC_RTS_REQ_CC
+#ifndef LC_RTS_REQUEST_CC
 #error LC_RTS_REQ_CC must be defined!
-#elif LC_RTS_REQ_CC < 0
+#elif LC_RTS_REQUEST_CC < 0
 #error LC_RTS_REQ_CC must not be less than zero
-#elif LC_RTS_REQ_CC > 127
+#elif LC_RTS_REQUEST_CC > 127
 #error LC_RTS_REQ_CC must not exceed 127
 #endif
 
@@ -60,20 +65,20 @@
 /*
  * Application name
  */
-#ifndef LC_APP_NAME
-#error LC_APP_NAME must be defined!
-#endif
+// #ifndef LC_APP_NAME
+// #error LC_APP_NAME must be defined!
+// #endif
 
 /*
  * Command pipe depth
  */
-#ifndef LC_PIPE_DEPTH
-#error LC_PIPE_DEPTH must be defined!
-#elif LC_PIPE_DEPTH < 1
-#error LC_PIPE_DEPTH must not be less than 1
-#elif LC_PIPE_DEPTH > UINT16_MAX
-#error LC_PIPE_DEPTH must not exceed UINT16_MAX
-#endif
+// #ifndef LC_PIPE_DEPTH
+// #error LC_PIPE_DEPTH must be defined!
+// #elif LC_PIPE_DEPTH < 1
+// #error LC_PIPE_DEPTH must not be less than 1
+// #elif LC_PIPE_DEPTH > UINT16_MAX
+// #error LC_PIPE_DEPTH must not exceed UINT16_MAX
+// #endif
 
 /*
  * Maximum number of watchpoints
@@ -124,16 +129,16 @@
 /*
  * Default watchpoint definition table filename
  */
-#ifndef LC_WDT_FILENAME
-#error LC_WDT_FILENAME must be defined!
-#endif
+// #ifndef LC_WDT_FILENAME
+// #error LC_WDT_FILENAME must be defined!
+// #endif
 
 /*
  * Default actionpoint definition table filename
  */
-#ifndef LC_ADT_FILENAME
-#error LC_ADT_FILENAME must be defined!
-#endif
+// #ifndef LC_ADT_FILENAME
+// #error LC_ADT_FILENAME must be defined!
+// #endif
 
 /*
  * RPN equation buffer size (in 16 bit words)

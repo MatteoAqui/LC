@@ -27,8 +27,8 @@
 *************************************************************************/
 #include "lc_app.h"
 #include "lc_cmds.h"
-#include "lc_msgids.h"
-#include "lc_eventids.h"
+// #include "lc_msgids.h"
+// #include "lc_eventids.h"
 #include "lc_version.h"
 #include "lc_action.h"
 #include "lc_watch.h"

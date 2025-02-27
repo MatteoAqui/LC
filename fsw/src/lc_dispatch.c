@@ -28,10 +28,12 @@
 #include "lc_app.h"
 #include "lc_cmds.h"
 #include "lc_dispatch.h"
-#include "lc_msgids.h"
-#include "lc_eventids.h"
+// #include "lc_msgids.h"
+// #include "lc_eventids.h"
 #include "lc_platform_cfg.h"
 #include "lc_watch.h"
+#include "lc_eds_typedefs.h"  // changed names of structures to match this def
+#include "lc_eds_cc.h" 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /*                                                                 */
@@ -55,40 +57,73 @@ bool LC_VerifyMsgLength(const CFE_MSG_Message_t *MsgPtr, size_t ExpectedLength)
         CFE_MSG_GetMsgId(MsgPtr, &MessageID);
         CFE_MSG_GetFcnCode(MsgPtr, &CommandCode);
 
-        switch (CFE_SB_MsgIdToValue(MessageID))
+        if (CFE_SB_MsgId_Equal(MessageID, LC_AppData.SendHkMid))
         {
-            case LC_SEND_HK_MID:
-                /*
-                ** For a bad HK request, just send the event. We only increment
-                ** the error counter for ground commands and not internal messages.
-                */
-                CFE_EVS_SendEvent(LC_HKREQ_LEN_ERR_EID, CFE_EVS_EventType_ERROR,
-                                  "Invalid HK request msg length: ID = 0x%08lX, CC = %d, Len = %d, Expected = %d",
-                                  (unsigned long)CFE_SB_MsgIdToValue(MessageID), CommandCode, (int)ActualLength,
-                                  (int)ExpectedLength);
-                break;
-
-            case LC_SAMPLE_AP_MID:
-                /*
-                ** Same thing as previous for a bad actionpoint sample request
-                */
-                CFE_EVS_SendEvent(LC_APSAMPLE_LEN_ERR_EID, CFE_EVS_EventType_ERROR,
-                                  "Invalid AP sample msg length: ID = 0x%08lX, CC = %d, Len = %d, Expected = %d",
-                                  (unsigned long)CFE_SB_MsgIdToValue(MessageID), CommandCode, (int)ActualLength,
-                                  (int)ExpectedLength);
-                break;
-
-            default:
-                /*
-                ** All other cases, increment error counter
-                */
-                CFE_EVS_SendEvent(LC_CMD_LEN_ERR_EID, CFE_EVS_EventType_ERROR,
-                                  "Invalid msg length: ID = 0x%08lX, CC = %d, Len = %d, Expected = %d",
-                                  (unsigned long)CFE_SB_MsgIdToValue(MessageID), CommandCode, (int)ActualLength,
-                                  (int)ExpectedLength);
-                LC_AppData.CmdErrCount++;
-                break;
+            /*
+            ** For a bad HK request, just send the event. We only increment
+            ** the error counter for ground commands and not internal messages.
+            */
+            CFE_EVS_SendEvent(LC_HKREQ_LEN_ERR_EID, CFE_EVS_EventType_ERROR,
+                              "Invalid HK request msg length: ID = 0x%08lX, CC = %d, Len = %d, Expected = %d",
+                             (unsigned long)CFE_SB_MsgIdToValue(MessageID), CommandCode, (int)ActualLength,
+                             (int)ExpectedLength);            
         }
+        else if (CFE_SB_MsgId_Equal(MessageID, LC_AppData.SampleApMid))
+        {
+            /*
+            ** Same thing as previous for a bad actionpoint sample request
+            */
+            CFE_EVS_SendEvent(LC_APSAMPLE_LEN_ERR_EID, CFE_EVS_EventType_ERROR,
+                              "Invalid AP sample msg length: ID = 0x%08lX, CC = %d, Len = %d, Expected = %d",
+                              (unsigned long)CFE_SB_MsgIdToValue(MessageID), CommandCode, (int)ActualLength,
+                              (int)ExpectedLength);            
+        }
+        else
+        {
+            /*
+            ** All other cases, increment error counter
+            */
+            CFE_EVS_SendEvent(LC_CMD_LEN_ERR_EID, CFE_EVS_EventType_ERROR,
+                              "Invalid msg length: ID = 0x%08lX, CC = %d, Len = %d, Expected = %d",
+                              (unsigned long)CFE_SB_MsgIdToValue(MessageID), CommandCode, (int)ActualLength,
+                              (int)ExpectedLength);
+            LC_AppData.CmdErrCount++;            
+        }
+
+        // switch (CFE_SB_MsgIdToValue(MessageID))
+        // {
+        //     case LC_SEND_HK_MID:
+        //         /*
+        //         ** For a bad HK request, just send the event. We only increment
+        //         ** the error counter for ground commands and not internal messages.
+        //         */
+        //         CFE_EVS_SendEvent(LC_HKREQ_LEN_ERR_EID, CFE_EVS_EventType_ERROR,
+        //                           "Invalid HK request msg length: ID = 0x%08lX, CC = %d, Len = %d, Expected = %d",
+        //                           (unsigned long)CFE_SB_MsgIdToValue(MessageID), CommandCode, (int)ActualLength,
+        //                           (int)ExpectedLength);
+        //         break;
+
+        //     case LC_SAMPLE_AP_MID:
+        //         /*
+        //         ** Same thing as previous for a bad actionpoint sample request
+        //         */
+        //         CFE_EVS_SendEvent(LC_APSAMPLE_LEN_ERR_EID, CFE_EVS_EventType_ERROR,
+        //                           "Invalid AP sample msg length: ID = 0x%08lX, CC = %d, Len = %d, Expected = %d",
+        //                           (unsigned long)CFE_SB_MsgIdToValue(MessageID), CommandCode, (int)ActualLength,
+        //                           (int)ExpectedLength);
+        //         break;
+
+        //     default:
+        //         /*
+        //         ** All other cases, increment error counter
+        //         */
+        //         CFE_EVS_SendEvent(LC_CMD_LEN_ERR_EID, CFE_EVS_EventType_ERROR,
+        //                           "Invalid msg length: ID = 0x%08lX, CC = %d, Len = %d, Expected = %d",
+        //                           (unsigned long)CFE_SB_MsgIdToValue(MessageID), CommandCode, (int)ActualLength,
+        //                           (int)ExpectedLength);
+        //         LC_AppData.CmdErrCount++;
+        //         break;
+        // }
 
         result = false;
     }
@@ -103,7 +138,7 @@ bool LC_VerifyMsgLength(const CFE_MSG_Message_t *MsgPtr, size_t ExpectedLength)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void LC_SampleAPVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 {
-    size_t ExpectedLength = sizeof(LC_SampleAPCmd_t);
+    size_t ExpectedLength = sizeof(LC_SampleAp_t);
 
     /*
     ** Verify message packet length
@@ -121,7 +156,7 @@ void LC_SampleAPVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void LC_SendHkVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 {
-    size_t ExpectedLength = sizeof(LC_SendHkCmd_t);
+    size_t ExpectedLength = sizeof(LC_SendHk_t);
 
     /*
     ** Verify message packet length
@@ -139,7 +174,7 @@ void LC_SendHkVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void LC_NoopVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 {
-    size_t ExpectedLength = sizeof(LC_NoopCmd_t);
+    size_t ExpectedLength = sizeof(LC_Noop_t);
 
     if (LC_VerifyMsgLength(&BufPtr->Msg, ExpectedLength))
     {
@@ -154,7 +189,7 @@ void LC_NoopVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void LC_ResetCountersVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 {
-    size_t ExpectedLength = sizeof(LC_ResetCountersCmd_t);
+    size_t ExpectedLength = sizeof(LC_ResetCounters_t);
 
     if (LC_VerifyMsgLength(&BufPtr->Msg, ExpectedLength))
     {
@@ -169,7 +204,7 @@ void LC_ResetCountersVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void LC_SetLCStateVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 {
-    size_t ExpectedLength = sizeof(LC_SetLCStateCmd_t);
+    size_t ExpectedLength = sizeof(LC_SetLcState_t);
 
     if (LC_VerifyMsgLength(&BufPtr->Msg, ExpectedLength))
     {
@@ -184,7 +219,7 @@ void LC_SetLCStateVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void LC_SetAPStateVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 {
-    size_t ExpectedLength = sizeof(LC_SetAPStateCmd_t);
+    size_t ExpectedLength = sizeof(LC_SetApState_t);
 
     if (LC_VerifyMsgLength(&BufPtr->Msg, ExpectedLength))
     {
@@ -199,7 +234,7 @@ void LC_SetAPStateVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void LC_SetAPPermOffVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 {
-    size_t ExpectedLength = sizeof(LC_SetAPPermOffCmd_t);
+    size_t ExpectedLength = sizeof(LC_SetApPermOff_t);
 
     if (LC_VerifyMsgLength(&BufPtr->Msg, ExpectedLength))
     {
@@ -214,7 +249,7 @@ void LC_SetAPPermOffVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void LC_ResetAPStatsVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 {
-    size_t ExpectedLength = sizeof(LC_ResetAPStatsCmd_t);
+    size_t ExpectedLength = sizeof(LC_ResetApStats_t);
 
     if (LC_VerifyMsgLength(&BufPtr->Msg, ExpectedLength))
     {
@@ -229,7 +264,7 @@ void LC_ResetAPStatsVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void LC_ResetWPStatsVerifyDispatch(const CFE_SB_Buffer_t *BufPtr)
 {
-    size_t ExpectedLength = sizeof(LC_ResetWPStatsCmd_t);
+    size_t ExpectedLength = sizeof(LC_ResetWpStats_t);
 
     if (LC_VerifyMsgLength(&BufPtr->Msg, ExpectedLength))
     {
@@ -249,79 +284,149 @@ CFE_Status_t LC_AppPipe(const CFE_SB_Buffer_t *BufPtr)
 
     CFE_MSG_GetMsgId(&BufPtr->Msg, &MessageID);
 
-    switch (CFE_SB_MsgIdToValue(MessageID))
+    if (CFE_SB_MsgId_Equal(MessageID, LC_AppData.SampleApMid))
     {
         /*
         ** Sample actionpoints request
         */
-        case LC_SAMPLE_AP_MID:
-            LC_SampleAPVerifyDispatch(BufPtr);
-            break;
-
+        LC_SampleAPVerifyDispatch(BufPtr);           
+    }
+    else if (CFE_SB_MsgId_Equal(MessageID, LC_AppData.SendHkMid))
+    {
         /*
         ** Housekeeping telemetry request
         ** (only routine that can return a critical error indicator)
         */
-        case LC_SEND_HK_MID:
-            LC_SendHkVerifyDispatch(BufPtr);
-            break;
-
+        LC_SendHkVerifyDispatch(BufPtr);          
+    }
+    else if (CFE_SB_MsgId_Equal(MessageID, LC_AppData.CmdMid))
+    {
         /*
         ** LC application commands...
         */
-        case LC_CMD_MID:
+        CFE_MSG_GetFcnCode(&BufPtr->Msg, &CommandCode);
+        switch (CommandCode)
+        {
+            case LC_NOOP_CC:
+                LC_NoopVerifyDispatch(BufPtr);
+                break;
 
-            CFE_MSG_GetFcnCode(&BufPtr->Msg, &CommandCode);
-            switch (CommandCode)
-            {
-                case LC_NOOP_CC:
-                    LC_NoopVerifyDispatch(BufPtr);
-                    break;
+            case LC_RESET_COUNTERS_CC:
+                LC_ResetCountersVerifyDispatch(BufPtr);
+                break;
 
-                case LC_RESET_CC:
-                    LC_ResetCountersVerifyDispatch(BufPtr);
-                    break;
+            case LC_SET_LC_STATE_CC:
+                LC_SetLCStateVerifyDispatch(BufPtr);
+                break;
 
-                case LC_SET_LC_STATE_CC:
-                    LC_SetLCStateVerifyDispatch(BufPtr);
-                    break;
+            case LC_SET_AP_STATE_CC:
+                LC_SetAPStateVerifyDispatch(BufPtr);
+                break;
 
-                case LC_SET_AP_STATE_CC:
-                    LC_SetAPStateVerifyDispatch(BufPtr);
-                    break;
+            case LC_SET_AP_PERM_OFF_CC:
+                LC_SetAPPermOffVerifyDispatch(BufPtr);
+                break;
 
-                case LC_SET_AP_PERM_OFF_CC:
-                    LC_SetAPPermOffVerifyDispatch(BufPtr);
-                    break;
+            case LC_RESET_AP_STATS_CC:
+                LC_ResetAPStatsVerifyDispatch(BufPtr);
+                break;
 
-                case LC_RESET_AP_STATS_CC:
-                    LC_ResetAPStatsVerifyDispatch(BufPtr);
-                    break;
+            case LC_RESET_WP_STATS_CC:
+                LC_ResetWPStatsVerifyDispatch(BufPtr);
+                break;
 
-                case LC_RESET_WP_STATS_CC:
-                    LC_ResetWPStatsVerifyDispatch(BufPtr);
-                    break;
+            default:
+                CFE_EVS_SendEvent(LC_CC_ERR_EID, CFE_EVS_EventType_ERROR,
+                                  "Invalid command code: ID = 0x%08lX, CC = %d",
+                                  (unsigned long)CFE_SB_MsgIdToValue(MessageID), CommandCode);
 
-                default:
-                    CFE_EVS_SendEvent(LC_CC_ERR_EID, CFE_EVS_EventType_ERROR,
-                                      "Invalid command code: ID = 0x%08lX, CC = %d",
-                                      (unsigned long)CFE_SB_MsgIdToValue(MessageID), CommandCode);
+                LC_AppData.CmdErrCount++;
+                break;
 
-                    LC_AppData.CmdErrCount++;
-                    break;
-
-            } /* end CommandCode switch */
-            break;
-
+        } /* end CommandCode switch */
+    }
+    else
+    {
         /*
-        ** All other message ID's should be monitor
-        ** packets
+        ** All other message ID's should be monitor packets
         */
-        default:
-            LC_CheckMsgForWPs(MessageID, BufPtr);
-            break;
+        LC_CheckMsgForWPs(MessageID, BufPtr);           
+    }
 
-    } /* end MessageID switch */
+
+    // switch (CFE_SB_MsgIdToValue(MessageID))
+    // {
+    //     /*
+    //     ** Sample actionpoints request
+    //     */
+    //     case LC_SAMPLE_AP_MID:
+    //         LC_SampleAPVerifyDispatch(BufPtr);
+    //         break;
+
+    //     /*
+    //     ** Housekeeping telemetry request
+    //     ** (only routine that can return a critical error indicator)
+    //     */
+    //     case LC_SEND_HK_MID:
+    //         LC_SendHkVerifyDispatch(BufPtr);
+    //         break;
+
+    //     /*
+    //     ** LC application commands...
+    //     */
+    //     case LC_CMD_MID:
+
+    //         CFE_MSG_GetFcnCode(&BufPtr->Msg, &CommandCode);
+    //         switch (CommandCode)
+    //         {
+    //             case LC_NOOP_CC:
+    //                 LC_NoopVerifyDispatch(BufPtr);
+    //                 break;
+
+    //             case LC_RESET_COUNTERS_CC:
+    //                 LC_ResetCountersVerifyDispatch(BufPtr);
+    //                 break;
+
+    //             case LC_SET_LC_STATE_CC:
+    //                 LC_SetLCStateVerifyDispatch(BufPtr);
+    //                 break;
+
+    //             case LC_SET_AP_STATE_CC:
+    //                 LC_SetAPStateVerifyDispatch(BufPtr);
+    //                 break;
+
+    //             case LC_SET_AP_PERM_OFF_CC:
+    //                 LC_SetAPPermOffVerifyDispatch(BufPtr);
+    //                 break;
+
+    //             case LC_RESET_AP_STATS_CC:
+    //                 LC_ResetAPStatsVerifyDispatch(BufPtr);
+    //                 break;
+
+    //             case LC_RESET_WP_STATS_CC:
+    //                 LC_ResetWPStatsVerifyDispatch(BufPtr);
+    //                 break;
+
+    //             default:
+    //                 CFE_EVS_SendEvent(LC_CC_ERR_EID, CFE_EVS_EventType_ERROR,
+    //                                   "Invalid command code: ID = 0x%08lX, CC = %d",
+    //                                   (unsigned long)CFE_SB_MsgIdToValue(MessageID), CommandCode);
+
+    //                 LC_AppData.CmdErrCount++;
+    //                 break;
+
+    //         } /* end CommandCode switch */
+    //         break;
+
+    //     /*
+    //     ** All other message ID's should be monitor
+    //     ** packets
+    //     */
+    //     default:
+    //         LC_CheckMsgForWPs(MessageID, BufPtr);
+    //         break;
+
+    // } /* end MessageID switch */
 
     return CFE_SUCCESS;
 }

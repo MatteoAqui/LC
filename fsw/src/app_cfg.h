@@ -24,8 +24,8 @@
 **
 ** 0.0 - Initial version
 */
-#define  LC_MAJOR_VER   0
-#define  LC_MINOR_VER   0
+#define  LC_MAJOR_VERSION   0
+#define  LC_MINOR_VERSION   0
 #define  LC_REVISION    0
 
 /******************************************************************************
@@ -34,7 +34,7 @@
 */
 
 /* --- From default_lc_interface_cfg.h --- */
-
+#define LC_APP_NAME "LC"  // Place-holder for c tables handling, part of ini json table
 // #define LC_MAX_WATCHPOINTS 176
 // #define LC_MAX_ACTIONPOINTS 176
 // #define LC_MAX_ACTION_TEXT 32

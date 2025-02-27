@@ -27,13 +27,14 @@
 *************************************************************************/
 #include "lc_app.h"
 #include "lc_cmds.h"
-#include "lc_msgids.h"
-#include "lc_eventids.h"
+// #include "lc_msgids.h"
+// #include "lc_eventids.h"
 #include "lc_version.h"
 #include "lc_action.h"
 #include "lc_watch.h"
 #include "lc_platform_cfg.h"
 #include "lc_utils.h"
+#include "lc_eds_typedefs.h"  // changed names of structures to match this def
 
 #define LC_GET_CMD_PAYLOAD(ptr, type) (&((const type *)(ptr))->Payload)
 
@@ -44,11 +45,11 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void LC_SampleAPReq(const CFE_SB_Buffer_t *BufPtr)
 {
-    const LC_SampleAP_Payload_t *LC_SampleAP;
+    const LC_SampleAp_CmdPayload_t *LC_SampleAP;
     uint16                       WatchIndex;
     bool                         ValidSampleCmd = false;
 
-    LC_SampleAP = LC_GET_CMD_PAYLOAD(BufPtr, LC_SampleAPCmd_t);
+    LC_SampleAP = LC_GET_CMD_PAYLOAD(BufPtr, LC_SampleAp_t);
 
     /*
     ** Ignore AP sample requests if disabled at the application level
@@ -306,9 +307,9 @@ void LC_ResetCounters(void)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void LC_SetLCStateCmd(const CFE_SB_Buffer_t *BufPtr)
 {
-    const LC_SetLCState_Payload_t *CmdPtr;
+    const LC_SetLcState_CmdPayload_t *CmdPtr;
 
-    CmdPtr = LC_GET_CMD_PAYLOAD(BufPtr, LC_SetLCStateCmd_t);
+    CmdPtr = LC_GET_CMD_PAYLOAD(BufPtr, LC_SetLcState_t);
 
     switch (CmdPtr->NewLCState)
     {
@@ -338,13 +339,13 @@ void LC_SetLCStateCmd(const CFE_SB_Buffer_t *BufPtr)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void LC_SetAPStateCmd(const CFE_SB_Buffer_t *BufPtr)
 {
-    const LC_SetAPState_Payload_t *CmdPtr;
+    const LC_SetApState_CmdPayload_t *CmdPtr;
     uint32                         TableIndex;
     uint8                          CurrentAPState;
     bool                           ValidState = true;
     bool                           CmdSuccess = false;
 
-    CmdPtr = LC_GET_CMD_PAYLOAD(BufPtr, LC_SetAPStateCmd_t);
+    CmdPtr = LC_GET_CMD_PAYLOAD(BufPtr, LC_SetApState_t);
 
     /*
     ** Do a sanity check on the new actionpoint state
@@ -457,11 +458,11 @@ void LC_SetAPStateCmd(const CFE_SB_Buffer_t *BufPtr)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void LC_SetAPPermOffCmd(const CFE_SB_Buffer_t *BufPtr)
 {
-    const LC_SetAPPermOff_Payload_t *CmdPtr;
+    const LC_SetApPermOff_CmdPayload_t *CmdPtr;
     uint32                           TableIndex;
     uint8                            CurrentAPState;
 
-    CmdPtr = LC_GET_CMD_PAYLOAD(BufPtr, LC_SetAPPermOffCmd_t);
+    CmdPtr = LC_GET_CMD_PAYLOAD(BufPtr, LC_SetApPermOff_t);
 
     if (((CmdPtr->APNumber) == LC_ALL_ACTIONPOINTS) || ((CmdPtr->APNumber) >= LC_MAX_ACTIONPOINTS))
     {
@@ -514,10 +515,10 @@ void LC_SetAPPermOffCmd(const CFE_SB_Buffer_t *BufPtr)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void LC_ResetAPStatsCmd(const CFE_SB_Buffer_t *BufPtr)
 {
-    const LC_ResetAPStats_Payload_t *CmdPtr;
+    const LC_ResetApStats_CmdPayload_t *CmdPtr;
     bool                             CmdSuccess = false;
 
-    CmdPtr = LC_GET_CMD_PAYLOAD(BufPtr, LC_ResetAPStatsCmd_t);
+    CmdPtr = LC_GET_CMD_PAYLOAD(BufPtr, LC_ResetApStats_t);
 
     /* arg may be one or all AP's */
     if (CmdPtr->APNumber == LC_ALL_ACTIONPOINTS)
@@ -585,10 +586,10 @@ void LC_ResetResultsAP(uint32 StartIndex, uint32 EndIndex, bool ResetStatsCmd)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 void LC_ResetWPStatsCmd(const CFE_SB_Buffer_t *BufPtr)
 {
-    const LC_ResetWPStats_Payload_t *CmdPtr;
+    const LC_ResetWpStats_CmdPayload_t *CmdPtr;
     bool                             CmdSuccess = false;
 
-    CmdPtr = LC_GET_CMD_PAYLOAD(BufPtr, LC_ResetWPStatsCmd_t);
+    CmdPtr = LC_GET_CMD_PAYLOAD(BufPtr, LC_ResetWpStats_t);
 
     /* arg may be one or all WP's */
     if (CmdPtr->WPNumber == LC_ALL_WATCHPOINTS)

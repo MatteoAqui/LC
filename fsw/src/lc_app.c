@@ -330,8 +330,8 @@ CFE_Status_t LC_SbInit(void)
         if (Status != CFE_SUCCESS)
         {
             CFE_EVS_SendEvent(LC_SUB_HK_REQ_ERR_EID, CFE_EVS_EventType_ERROR,
-                              "Error Subscribing to HK Request, MID=0x%08X, RC=0x%08X", LC_AppData.SendHkMid,
-                              (unsigned int)Status);
+                              "Error Subscribing to HK Request, MID=0x%08X, RC=0x%08X", 
+                              CFE_SB_MsgIdToValue(LC_AppData.SendHkMid), (unsigned int)Status);
         }
     }
 
@@ -344,7 +344,8 @@ CFE_Status_t LC_SbInit(void)
         if (Status != CFE_SUCCESS)
         {
             CFE_EVS_SendEvent(LC_SUB_GND_CMD_ERR_EID, CFE_EVS_EventType_ERROR,
-                              "Error Subscribing to GND CMD, MID=0x%08X, RC=0x%08X", LC_AppData.CmdMid, (unsigned int)Status);
+                              "Error Subscribing to GND CMD, MID=0x%08X, RC=0x%08X", 
+                              CFE_SB_MsgIdToValue(LC_AppData.CmdMid), (unsigned int)Status);
         }
     }
 
@@ -357,8 +358,8 @@ CFE_Status_t LC_SbInit(void)
         if (Status != CFE_SUCCESS)
         {
             CFE_EVS_SendEvent(LC_SUB_SAMPLE_CMD_ERR_EID, CFE_EVS_EventType_ERROR,
-                              "Error Subscribing to Sample CMD, MID=0x%08X, RC=0x%08X", LC_AppData.SampleApMid,
-                              (unsigned int)Status);
+                              "Error Subscribing to Sample CMD, MID=0x%08X, RC=0x%08X", 
+                              CFE_SB_MsgIdToValue(LC_AppData.SampleApMid), (unsigned int)Status);
         }
     }
 

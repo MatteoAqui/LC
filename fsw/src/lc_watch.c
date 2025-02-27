@@ -27,10 +27,11 @@
 *************************************************************************/
 #include "lc_app.h"
 #include "lc_watch.h"
-#include "lc_eventids.h"
+// #include "lc_eventids.h"
 #include "lc_custom.h"
-#include "lc_perfids.h"
+// #include "lc_perfids.h"
 #include "lc_platform_cfg.h"
+#include "lc_eds_typedefs.h"
 
 #include <float.h>
 #include <math.h>
@@ -490,6 +491,9 @@ uint8 LC_OperatorCompare(uint16 WatchIndex, uint32 ProcessedWPData)
         case LC_DATA_WATCH_FLOAT_BE:
         case LC_DATA_WATCH_FLOAT_LE:
         default:
+            WatchpointValue.Signed8 = ProcessedWPData;  // to avoid warning, to be tested
+            WatchpointValue.Signed16 = ProcessedWPData;  // to avoid warning, to be tested
+            WatchpointValue.Signed32 = ProcessedWPData;  // to avoid warning, to be tested
             WatchpointValue.Unsigned32 = ProcessedWPData;
             break;
     }
