@@ -520,6 +520,26 @@
         </EnumerationList>
       </EnumeratedDataType>
 
+      <ContainerDataType name="WDT" shortDescription="Watchpoint Definition Table (WDT) Table structure">
+        <EntryList>
+          <Entry name="Entries" type="WdtEntry" >
+            <ArrayDimensions>
+              <Dimension size="${MAX_WATCHPOINTS}" />  
+            </ArrayDimensions>
+          </Entry>
+        </EntryList>
+      </ContainerDataType>
+
+      <ContainerDataType name="ADT" shortDescription="Actionpoint Definition Table (WDT) Table structure">
+        <EntryList>
+          <Entry name="Entries" type="AdtEntry" >
+            <ArrayDimensions>
+              <Dimension size="${MAX_ACTIONPOINTS}" />  
+            </ArrayDimensions>
+          </Entry>
+        </EntryList>
+      </ContainerDataType>
+
     </DataTypeSet>
 
     <ComponentSet>
