@@ -1089,6 +1089,13 @@ int32 LC_ValidateWDT(void *TableData)
 
             TableResult = EntryResult;
         }
+        /*
+        ** DEBUG: write events for all encounters to understand what's going on
+        */
+        // CFE_EVS_SendEvent(LC_WDTVAL_INF_EID, CFE_EVS_EventType_DEBUG,
+        //                   "WDT verify: WP = %d, Err = %d, DType = %d, Oper = %d, MID = 0x%08lX, ComparisonValue = 0x%08X",
+        //                   (int)TableIndex, (int)EntryResult, DataType, OperatorID,
+        //                   (unsigned long)CFE_SB_MsgIdToValue(MessageID), (unsigned int)PrintableBits);        
 
     } /* end TableIndex for */
 

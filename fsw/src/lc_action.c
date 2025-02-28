@@ -580,6 +580,12 @@ int32 LC_ValidateADT(void *TableData)
 
             TableResult = EntryResult;
         }
+        /*
+        ** DEBUG: write events for all encounters to understand what's going on
+        */
+        CFE_EVS_SendEvent(LC_ADTVAL_INF_EID, CFE_EVS_EventType_INFORMATION, 
+                          "ADT verify: AP = %d, Err = %d, State = %d, RTS = %d, FailCnt = %d, EvtType = %d, Index = %d, StackDepth = %d",
+                          (int)TableIndex, (int)EntryResult, DefaultState, RTSId, MaxFailsBeforeRTS, EventType, (int)RPNIndex, (int)RPNStackDepth);
 
     } /* end TableIndex for */
 
