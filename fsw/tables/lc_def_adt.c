@@ -43,6 +43,7 @@
 // #include "lc_eventids.h"
 #include "app_cfg.h"
 #include "lc_eds_defines.h"
+// #include "lc_eds_typedefs.h"
 
 /*************************************************************************
 ** Examples
@@ -178,6 +179,7 @@ CFE_TBL_FileDef_t CFE_TBL_FileDef = {"LC_ADT", LC_APP_NAME "." LC_ADT_TABLENAME,
 ** Default actionpoint definition table (ADT) data
 */
 LC_ADTEntry_t LC_ADT[LC_MAX_ACTIONPOINTS] = {
+// LC_ADT_t LC_ADT = {.Config = {
     /* #0 (unused) */
     {.DefaultState      = LC_APSTATE_NOT_USED,
      .MaxPassiveEvents  = 0,
@@ -2638,5 +2640,7 @@ LC_ADTEntry_t LC_ADT[LC_MAX_ACTIONPOINTS] = {
      .EventType         = CFE_EVS_EventType_INFORMATION,
      .EventID           = 0,
      .EventText         = {" "},
-     .RPNEquation       = {              /* (WP_0) */
-                     0, LC_RPN_EQUAL}}}; /* end LC_DefaultADT */
+     .RPNEquation       = 
+         {/* (WP_0) */
+          0, LC_RPN_EQUAL}}
+}; /* end LC_DefaultADT */

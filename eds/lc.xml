@@ -64,7 +64,7 @@
       </ContainerDataType>
 
       <EnumeratedDataType name="ApState" shortDescription="Possible Action Point States" >
-        <IntegerDataEncoding sizeInBits="16" encoding="unsigned" />
+        <IntegerDataEncoding sizeInBits="8" encoding="unsigned" />
         <EnumerationList>
           <Enumeration label="NOT_USED" value="0xFF" shortDescription="Actionpoint unused, not valid command argument" />
           <Enumeration label="ACTIVE" value="1" shortDescription="Actionpoint state active" />
@@ -343,7 +343,7 @@
               <Dimension size="${MAX_RPN_EQU_SIZE}"/>  
             </ArrayDimensions>
           </Entry>      
-          <Entry name="EventType" type="BASE_TYPES/uint16" shortDescription="Event type used for event msg if AP fails"/>
+          <Entry name="EventType" type="CFE_EVS/EventType" shortDescription="Event type used for event msg if AP fails"/>
           <Entry name="EventID" type="BASE_TYPES/uint16" shortDescription="Event ID used for event msg if AP fails"/>
           <Entry name="EventText" type="ActionText" shortDescription="Text used for the event msg when this AP fails"/>
         </EntryList>
@@ -522,7 +522,7 @@
 
       <ContainerDataType name="WDT" shortDescription="Watchpoint Definition Table (WDT) Table structure">
         <EntryList>
-          <Entry name="Entries" type="WdtEntry" >
+          <Entry name="Config" type="WdtEntry" >
             <ArrayDimensions>
               <Dimension size="${MAX_WATCHPOINTS}" />  
             </ArrayDimensions>
@@ -532,7 +532,7 @@
 
       <ContainerDataType name="ADT" shortDescription="Actionpoint Definition Table (WDT) Table structure">
         <EntryList>
-          <Entry name="Entries" type="AdtEntry" >
+          <Entry name="Config" type="AdtEntry" >
             <ArrayDimensions>
               <Dimension size="${MAX_ACTIONPOINTS}" />  
             </ArrayDimensions>
